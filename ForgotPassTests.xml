@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="ForgotPassSuite1">
+
+    <test name="ForgotPassTest01">
+        <classes>
+            <class name="com.softserve.edu.greencity.ui.tests.ForgotPasswordTests">
+                <methods>
+                    <include name="isForgotPasswordPopup"/>
+                    <include name="forgotPasswordWithEmptyEmailFieldValidation"/>
+                    <include name="forgotPasswordWithInCorrectEmailFieldValidation"/>
+                    <include name="directedBackToSignInFromForgot"/>
+                    <include name="restorePassForUnregisterUser"/>
+                    <include name="successMailToRestorePass"/>
+                    <include name="forgotPassFormValidation"/>
+                </methods>
+            </class>
+        </classes>
+    </test> <!-- Test -->
+
+</suite> <!-- Suite -->
+
+
