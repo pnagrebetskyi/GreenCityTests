@@ -21,7 +21,6 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 public abstract class GreenCityTestRunner {
     public static final String BASE_URL = "https://ita-social-projects.github.io/GreenCityClient/#/welcome";
-//    public static final String BASE_URL = "http://localhost:4200/#/welcome";
 
     private final boolean CHROME_HEADLESS_OPTION = false;
     private final String CHROME_LANGUAGE_OPTION = "en";
@@ -62,7 +61,6 @@ public abstract class GreenCityTestRunner {
         if (!result.isSuccess()) {
             logger.warn("Test " + result.getName() + " ERROR");
         }
-        //System.out.println("@AfterMethod tearDown");
     }
 
     public WelcomePage loadApplication() {

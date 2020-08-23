@@ -3,17 +3,16 @@
 
 <suite name="LoginSuite1">
 
-	<test name="LoginTest01">
-		<classes>
-			<class name="com.softserve.edu.greencity.ui.tests.LoginTest" >
-				<methods>
-                                        <include name="signInWithValidCredentials" />
-					<include name="signInWithUnregisteredCredentials" />
-					<include name="signInWithInvalidPassword" />
-					<include name="signOutValidation" />
-				</methods>
-			</class>
-		</classes>
-	</test> <!-- Test -->
+    <test name="LoginTest01">
+        <classes>
+            <class name="com.softserve.edu.greencity.ui.tests.LoginTest">
+                <methods>
+                    <include name="signUpByGoogle"/>
+                    <include name="signInByGoogle"/>
+                    <include name="signInByGoogleCredentialsOnManualSignInPopUp"/>
+                </methods>
+            </class>
+        </classes>
+    </test> <!-- Test -->
 
 </suite> <!-- Suite -->

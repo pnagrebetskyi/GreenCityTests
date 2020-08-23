@@ -7,7 +7,7 @@ import org.openqa.selenium.WebElement;
 
 
 public class MyCabinetPage extends TopPart {
-    private WebElement addNewHabitButton;
+    private By addNewHabitButton=By.id("create-button");
     private HabitsContainer habitsContainer;
     private MyGoalsContainer goalsContainer;
 
@@ -24,6 +24,6 @@ public class MyCabinetPage extends TopPart {
     }
 
     public WebElement getAddNewHabitButton() {
-        return addNewHabitButton = driver.findElement(By.id("create-button"));
+        return driver.findElement(addNewHabitButton);
     }
 }

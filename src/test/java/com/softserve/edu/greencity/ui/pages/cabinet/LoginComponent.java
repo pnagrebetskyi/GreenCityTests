@@ -1,5 +1,6 @@
 package com.softserve.edu.greencity.ui.pages.cabinet;
 
+import com.softserve.edu.greencity.ui.pages.common.ForgotPasswordComponent;
 import com.softserve.edu.greencity.ui.pages.common.TopPart;
 import com.softserve.edu.greencity.ui.tools.ElementsCustomMethods;
 import org.openqa.selenium.By;
@@ -9,93 +10,107 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class LoginComponent extends TopPart {
-    private WebDriverWait wait;
-
-    private WebElement modalWindow;
     public static final String MODAL_WINDOW_CSS = "app-sign-in div";
+    protected WebDriverWait wait;
 
-    private WebElement title;
-    private WebElement subtitle;
-    private WebElement forgotPasswordLink;
-    private WebElement singUpLink;
-    private WebElement singInWithGoogleButton;
-    private WebElement closeFormButton;
-    private WebElement googleSignInButton;
+    private By modalWindow = By.cssSelector(".wrapper");
+    private By title = By.cssSelector("app-sign-in h1");
+    private By subtitle = By.cssSelector("app-sign-in h2");
+    private By forgotPasswordLink = By.cssSelector(".forgot-password");
+    private By singInWithGoogleButton = By.cssSelector(".google-sign-in");
+    private By singUpLink = By.cssSelector(".missing-account .sign-up-link");
+    private By closeFormButton = By.cssSelector(".cross-btn");
+    protected By loginComponent = By.cssSelector(".cdk-overlay-pane");
 
     private ManualLoginComponent manualLoginComponent;
 
-    private final String FORGOT_PASSWORD_LINK_CLASS = "forgot-password";
-    private final String REGISTRATION_LINK_CLASS = "signup-link";
-    private final String SING_IN_WITH_GOOGLE_BUTTON_CLASS = ".google-sign-in";
-    private final String SIGN_UP_LINK_CLASS = ".missing-account .sign-up-link";
-    private final String CLOSE_BUTTON_CLASS = ".cross-btn";
-    private final String TITLE_CLASS = ".right-side h1";
-    private final String SUBTITLE_CLASS = ".right-side h2";
-    private final String GOOGLE_SIGN_IN_BUTTON_CLASS = ".google-sign-in";
-    private final String LOGIN_COMPONENT_OVERLAY_CLASS = ".cdk-overlay-pane";
-
-
-
     public LoginComponent(WebDriver driver) {
         super(driver);
-        init();
+        checkElements();
     }
 
-    public void init(){
-        wait = new WebDriverWait(driver,10);
+    public void checkElements() {
+        wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOf(getTitle()));
-
     }
 
     public ManualLoginComponent getManualLoginComponent() {
         return manualLoginComponent = new ManualLoginComponent(driver);
     }
 
-    protected WebElement getLoginModalWindow(){
-        this.modalWindow = driver
-                .findElement(By.cssSelector(MODAL_WINDOW_CSS));
-        return modalWindow;
-
+    //Sign in popup window
+    protected WebElement getLoginModalWindow() {
+        return driver.findElement(modalWindow);
     }
 
+    //Title
     protected WebElement getTitle() {
-        return title = driver.findElement(By.cssSelector(TITLE_CLASS));
+        return driver.findElement(title);
     }
 
-    public String getTitleString() {
+    public String getTitleText() {
         wait = new WebDriverWait(driver, 3);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(TITLE_CLASS)));
-
-        return this.getTitle().getText();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(title));
+        return getTitle().getText();
     }
 
+    //SubTitle
     protected WebElement getSubtitle() {
-        return subtitle = driver.findElement(By.cssSelector(SUBTITLE_CLASS));
+        return driver.findElement(subtitle);
     }
 
-    public String getSubtitleString() {
+    public String getSubtitleText() {
         return this.getSubtitle().getText();
     }
 
+    //Forgot password
+    public WebElement getForgotPasswordLink() {
+        wait = new WebDriverWait(driver, 5);
+        wait.until(ExpectedConditions.elementToBeClickable(forgotPasswordLink));
+        return driver.findElement(forgotPasswordLink);
+    }
+
+    public boolean isDisplayedForgotPasswordLink() {
+        return getForgotPasswordLink().isDisplayed();
+    }
+    public ForgotPasswordComponent clickForgotPasswordLink(){
+        getForgotPasswordLink().click();
+        return new ForgotPasswordComponent(driver);
+    }
+
+    //Sign in with Google
+    public WebElement getSingInWithGoogleButton() {
+        return driver.findElement(singInWithGoogleButton);
+    }
+
+    public boolean isDisplayedSingInWithGoogleButton() {
+        return getSingInWithGoogleButton().isDisplayed();
+    }
+
+    public GoogleLoginPage clickSingInWithGoogleButton() {
+        getSingInWithGoogleButton().click();
+        return new GoogleLoginPage(driver);
+    }
+
+    //Sign up link
     public WebElement getSignUpLink() {
         wait = new WebDriverWait(driver, 5);
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(SIGN_UP_LINK_CLASS)));
+        wait.until(ExpectedConditions.elementToBeClickable(singUpLink));
+        return driver.findElement(singUpLink);
+    }
 
-        return singUpLink = driver.findElement(By.cssSelector(SIGN_UP_LINK_CLASS));
+    public boolean isDisplayedSignUpLink() {
+        return getSignUpLink().isDisplayed();
     }
 
     public RegisterComponent clickSignUpLink() {
         getSignUpLink().click();
-
         return new RegisterComponent(driver);
     }
 
-    public WebElement getSingInWithGoogleButton() {
-        return singInWithGoogleButton = driver.findElement(By.cssSelector(SING_IN_WITH_GOOGLE_BUTTON_CLASS));
-    }
-
+    //Close Sign in popup window
     public WebElement getCloseFormButton() {
-        return closeFormButton = driver.findElement(By.cssSelector(CLOSE_BUTTON_CLASS));
+        return driver.findElement(closeFormButton);
     }
 
     public void closeLoginComponent() {
@@ -104,18 +119,8 @@ public class LoginComponent extends TopPart {
 
     public boolean isLoginComponentClosed() {
         closeLoginComponent();
-
         ElementsCustomMethods elementsCustomMethods = new ElementsCustomMethods(driver);
-        return elementsCustomMethods.waitTillElementGone(driver, By.cssSelector(LOGIN_COMPONENT_OVERLAY_CLASS), 6000, 2000);
-    }
-
-    protected WebElement getGoogleSignUpButton() {
-        return googleSignInButton = driver.findElement(By.cssSelector(GOOGLE_SIGN_IN_BUTTON_CLASS));
-    }
-
-    public GoogleLoginPage clickGoogleSignInButton() {
-        getGoogleSignUpButton().click();
-
-        return new GoogleLoginPage(driver);
+        return elementsCustomMethods.waitTillElementGone(driver, loginComponent, 6000, 2000);
     }
 }
+

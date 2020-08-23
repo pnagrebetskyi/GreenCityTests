@@ -8,34 +8,42 @@ import org.openqa.selenium.WebElement;
 
 public class TopGuestComponent {
     private WebDriver driver;
-    private WebElement signinLink;
-    private WebElement signupLink;
+    private By signInLink = By.cssSelector("li.sign-in-link.tertiary-global-button a");
+    private By signUpLink = By.cssSelector("li.sign-up-link.ng-star-inserted div");
 
     public TopGuestComponent(WebDriver driver) {
         this.driver = driver;
     }
 
-
-    public WebElement getSigninLink() {
-        return signinLink = driver.findElement(By.cssSelector("li.sign-in-link.tertiary-global-button a"));
+    //Sign In link
+    public WebElement getSignInLink() {
+        return driver.findElement(signInLink);
     }
 
+    public boolean isDisplayedSignInLink() {
+        return getSignInLink().isDisplayed();
+    }
 
     public LoginComponent clickSignInLink() {
-        getSigninLink().click();
+        getSignInLink().click();
         return new LoginComponent(driver);
     }
 
-    public WebElement getSignupLink() {
-        return signupLink = driver.findElement(By.cssSelector("li.sign-up-link.ng-star-inserted div"));
+    //Sign Up link
+    public WebElement getSignUpLink() {
+        return driver.findElement(signUpLink);
     }
 
-    public String getSignupLinkText() {
-        return getSignupLink().getText();
+    public boolean isDisplayedSignUpLink() {
+        return getSignUpLink().isDisplayed();
+    }
+
+    public String getSignUpLinkText() {
+        return getSignUpLink().getText();
     }
 
     public RegisterComponent clickSignUpLink() {
-        getSignupLink().click();
+        getSignUpLink().click();
         return new RegisterComponent(driver);
     }
 }
