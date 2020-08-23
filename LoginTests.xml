@@ -7,6 +7,23 @@
         <classes>
             <class name="com.softserve.edu.greencity.ui.tests.LoginTest">
                 <methods>
+                    <include name="signInWithValidCredentials"/>
+                    <include name="signInWithUnregisteredCredentials"/>
+                    <include name="signInWithInvalidPassword"/>
+                    <include name="signOutValidation"/>
+                    <include name="signInFormValidation"/>
+                    <include name="singInWithEmptyRequiredFields"/>
+                    <include name="signUpLinkValidation"/>
+                    <include name="signInFormCloseButtonValidation"/>
+                    <include name="signInWithEmptyEmailFieldValidation"/>
+                    <include name="signInWithEmptyPasswordFieldValidation"/>
+                    <include name="signInWithIncorrectCredentials"/>
+                    <include name="correctEmailValidation"/>
+                    <include name="incorrectEmailValidation"/>
+                    <include name="clearEmailField"/>
+                    <include name="correctPasswordValidation"/>
+                    <include name="incorrectPasswordValidation"/>
+                    <include name="signInModalValidation"/>
                     <include name="signUpByGoogle"/>
                     <include name="signInByGoogle"/>
                     <include name="signInByGoogleCredentialsOnManualSignInPopUp"/>

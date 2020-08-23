@@ -45,7 +45,7 @@ public final class UserRepository {
     }
 
     public User googleUserCredentials() {
-        return new User(property.getProperty("googleEmail"), property.getProperty("googlePass"));
+        return new User(property.getProperty("googleEmail"), System.getenv().get(property.getProperty("defaultPass")));
     }
 
     public User emptyUserCredentials() {
