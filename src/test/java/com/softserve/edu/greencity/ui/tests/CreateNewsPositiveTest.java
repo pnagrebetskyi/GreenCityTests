@@ -207,7 +207,6 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
     /**
      * @ID=GC-644
      */
-    //TODO fix commented part
     @Test
     @Description("Verify that user can`t create news with empty title")
     public void verifyImpossibilityCreateNewsWithEmptyTitle() {
@@ -225,7 +224,6 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
         SoftAssert softAssert = new SoftAssert();
         boolean isDisabled = driver.findElement(By.cssSelector(".submit-buttons button+button+button")).isEnabled();
         softAssert.assertFalse(isDisabled);
-        //softAssert.assertTrue(driver.findElement(By.cssSelector(".left-form-column label span")).getText().equals("Should contain maximum 170 symbols"));
         softAssert.assertAll();
         createNewsPage.signOut();
     }
