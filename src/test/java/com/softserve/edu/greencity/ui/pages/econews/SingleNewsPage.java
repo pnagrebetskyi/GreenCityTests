@@ -2,6 +2,7 @@ package com.softserve.edu.greencity.ui.pages.econews;
 
 import java.util.List;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -10,7 +11,7 @@ import com.softserve.edu.greencity.ui.pages.common.TopPart;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class SingleNewsPage extends TopPart  {
+public class SingleNewsPage extends TopPart {
 
     protected WebDriverWait wait;
 
@@ -28,56 +29,69 @@ public class SingleNewsPage extends TopPart  {
         checkElements();
     }
 
+    @Step
     private void checkElements() {
         itemsContainer = new ItemsContainer(driver);
         wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOf(getTitle()));
     }
 
+    @Step
     private WebElement getGoToNews() {
         return searchElementByCss(goToNews);
     }
 
+    @Step
     private String getGoToNewsText() {
         return getGoToNews().getText();
     }
 
+    @Step
     private void clickGoToNewsButton() {
         getGoToNews().click();
     }
 
+    @Step
     private List<WebElement> getTagsList() {
         return tagsList;
     }
 
+    @Step
     private WebElement getTitle() {
         return searchElementByCss(title);
     }
 
+    @Step
     public String getTitleText() {
         return getTitle().getText().trim();
     }
 
+    @Step
     private WebElement getData() {
         return searchElementByCss(data);
     }
 
+    @Step
     private String getDataText() {
         return getData().getText();
     }
 
+    @Step
     private WebElement getAuthor() {
         return searchElementByCss(author);
     }
 
+    @Step
     private String getAuthorText() {
         return getAuthor().getText();
     }
 
+    @Step
     private WebElement getContent() {
         return searchElementByCss(content);
     }
 
+    @Step
     private String getContentText() {
         return getContent().getText();
     }
@@ -88,6 +102,7 @@ public class SingleNewsPage extends TopPart  {
      * @param number
      * @return SingleNewsPage
      */
+    @Step
     public SingleNewsPage switchToNextSingleNewsPageByNumber(int number) {
         itemsContainer.chooseNewsByNumber(number).clickTitle();
         return new SingleNewsPage(driver);
@@ -98,6 +113,7 @@ public class SingleNewsPage extends TopPart  {
      *
      * @return SingleNewsPage
      */
+    @Step
     public SingleNewsPage switchToNextSingleNewsPage() {
         switchToNextSingleNewsPageByNumber(1);
         return new SingleNewsPage(driver);
@@ -108,14 +124,9 @@ public class SingleNewsPage extends TopPart  {
      *
      * @return EcoNewsPage
      */
+    @Step
     public EcoNewsPage switchToEcoNewsPageBack() {
         clickGoToNewsButton();
         return new EcoNewsPage(driver);
     }
-
-    @Override
-    public WebDriver setDriver() {
-        return this.driver;
-    }
-
 }

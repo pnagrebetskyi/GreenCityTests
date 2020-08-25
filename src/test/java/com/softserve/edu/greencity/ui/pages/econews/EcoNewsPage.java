@@ -5,6 +5,7 @@ import com.softserve.edu.greencity.ui.data.econews.NewsData;
 import com.softserve.edu.greencity.ui.data.econews.Tag;
 import com.softserve.edu.greencity.ui.pages.common.TopPart;
 import com.softserve.edu.greencity.ui.tools.QuantityItems;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * @author lv-493 Taqc/Java
  */
-public class EcoNewsPage extends TopPart  {
+public class EcoNewsPage extends TopPart {
 
     protected WebDriverWait wait;
 
@@ -34,12 +35,14 @@ public class EcoNewsPage extends TopPart  {
 //        visualiseElements();
     }
 
-    private void checkElements(){
+    @Step
+    private void checkElements() {
         wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOf(getGridView()));
         wait.until(ExpectedConditions.visibilityOf(getListView()));
     }
 
+    @Step
     private void visualiseElements() {
         int i = 0;
         waiting(2);
@@ -54,26 +57,32 @@ public class EcoNewsPage extends TopPart  {
         }
     }
 
+    @Step
     private TagsComponent getTagsComponent() {
         return tagsComponent = new TagsComponent(driver);
     }
 
+    @Step
     private WebElement getFoundItems() {
         return searchElementByXpath(foundItems);
     }
 
+    @Step
     private String getFoundItemsText() {
         return getFoundItems().getText();
     }
 
+    @Step
     public WebElement getGridView() {
         return searchElementByCss(gridView);
     }
 
+    @Step
     public boolean isActiveGridView() {
         return getGridView().getAttribute("class").contains("active");
     }
 
+    @Step
     private void clickGridView() {
         if (!isActiveGridView()) {
             scrollToElement(getGridView());
@@ -81,14 +90,17 @@ public class EcoNewsPage extends TopPart  {
         }
     }
 
+    @Step
     private WebElement getListView() {
         return searchElementByCss(listView);
     }
 
+    @Step
     public boolean isActiveListView() {
         return getListView().getAttribute("class").contains("active");
     }
 
+    @Step
     private void clickListView() {
         if (!isActiveListView()) {
             scrollToElement(getListView());
@@ -96,18 +108,22 @@ public class EcoNewsPage extends TopPart  {
         }
     }
 
+    @Step
     private WebElement getCreateNewsButton() {
         return driver.findElement(createNewsButton);
     }
 
+    @Step
     private String getCreateNewsButtonText() {
         return getCreateNewsButton().getText();
     }
 
+    @Step
     private void clickCreateNewsButton() {
         getCreateNewsButton().click();
     }
 
+    @Step
     public ItemsContainer getItemsContainer() {
         return itemsContainer = new ItemsContainer(driver);
     }
@@ -117,6 +133,7 @@ public class EcoNewsPage extends TopPart  {
      *
      * @param el
      */
+    @Step
     private void scrollToElement(WebElement el) {
         Actions action = new Actions(driver);
         action.moveToElement(el).perform();
@@ -127,6 +144,7 @@ public class EcoNewsPage extends TopPart  {
      *
      * @param i
      */
+    @Step
     private void waiting(int i) {
         try {
             Thread.sleep(i * 1000);
@@ -140,6 +158,7 @@ public class EcoNewsPage extends TopPart  {
      *
      * @return int
      */
+    @Step
     public int getNumberOfItemComponent() {
         return new QuantityItems().quantityItems(getFoundItemsText());
     }
@@ -150,6 +169,7 @@ public class EcoNewsPage extends TopPart  {
      * @param tags
      * @return EcoNewsPage
      */
+    @Step
     public EcoNewsPage selectFilters(List<Tag> tags) {
         scrollToElement(getTagsComponent().getTags().get(1));
         getTagsComponent().selectTags(tags);
@@ -162,6 +182,7 @@ public class EcoNewsPage extends TopPart  {
      * @param tags
      * @return EcoNewsPage
      */
+    @Step
     public EcoNewsPage deselectFilters(List<Tag> tags) {
         scrollToElement(getTagsComponent().getTags().get(1));
         getTagsComponent().deselectTags(tags);
@@ -174,6 +195,7 @@ public class EcoNewsPage extends TopPart  {
      * @param language
      * @return EcoNewsPage
      */
+    @Step
     public EcoNewsPage switchLanguage(Languages language) {
         chooseLanguage(language);
         return new EcoNewsPage(driver);
@@ -184,16 +206,18 @@ public class EcoNewsPage extends TopPart  {
      *
      * @return EcoNewsPage
      */
+    @Step
     public EcoNewsPage switchToGridView() {
         clickGridView();
         return new EcoNewsPage(driver);
     }
 
     /**
-     * News are displaeyd as list
+     * News are displayed as list
      *
      * @return EcoNewsPage
      */
+    @Step
     public EcoNewsPage switchToListView() {
         clickListView();
         return new EcoNewsPage(driver);
@@ -217,6 +241,7 @@ public class EcoNewsPage extends TopPart  {
      * @param news
      * @return SingleNewsPage
      */
+    @Step
     public SingleNewsPage switchToSingleNewsPageByParameters(NewsData news) {
         scrollToElement(itemsContainer.findItemComponentByParameters(news).getTitle());
         itemsContainer.clickItemComponentOpenPage(news);
@@ -228,15 +253,10 @@ public class EcoNewsPage extends TopPart  {
      *
      * @return CreateNewsPage
      */
+    @Step
     public CreateNewsPage gotoCreateNewsPage() {
         scrollToElement(getCreateNewsButton());
         clickCreateNewsButton();
         return new CreateNewsPage(driver);
     }
-
-    @Override
-    public WebDriver setDriver() {
-        return this.driver;
-    }
-
 }

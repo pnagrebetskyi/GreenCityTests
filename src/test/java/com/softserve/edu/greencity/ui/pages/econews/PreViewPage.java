@@ -1,5 +1,6 @@
 package com.softserve.edu.greencity.ui.pages.econews;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
@@ -15,7 +16,7 @@ import java.util.*;
  *
  * @author lv-493 Taqc/Java
  */
-public class PreViewPage extends TopPart  {
+public class PreViewPage extends TopPart {
 
     protected WebDriverWait wait;
 
@@ -40,80 +41,99 @@ public class PreViewPage extends TopPart  {
         checkElements();
     }
 
+    @Step
     private void checkElements() {
         wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOf(getBackToEditingLink()));
     }
 
+    @Step
     public List<WebElement> getTagsFields() {
         tagsFields = driver.findElements(By.cssSelector("div.tags > div"));
         return tagsFields;
     }
 
+    @Step
     public WebElement getTitleField() {
         return searchElementByCss(titleField);
     }
 
+    @Step
     public String getTitleFieldText() {
         return getTitleField().getText();
     }
 
+    @Step
     public WebElement getDateField() {
         return searchElementByCss(dateField);
     }
 
+    @Step
     public String getDateFieldText() {
         return getDateField().getText();
     }
 
+    @Step
     public WebElement getAuthorField() {
         return searchElementByCss(authorField);
     }
 
+    @Step
     public String getAuthorFieldText() {
         return getAuthorField().getText();
     }
 
+    @Step
     public WebElement getContentField() {
         return searchElementByCss(contentField);
     }
 
+    @Step
     public String getContentFieldText() {
         return getContentField().getText();
     }
 
+    @Step
     public WebElement getImgTwitterLink() {
         return searchElementByXpath(imgTwitterLink);
     }
 
+    @Step
     public void clickImgTwitterLink() {
         getImgTwitterLink().click();
     }
 
+    @Step
     public WebElement getImgLinkedInLink() {
         return searchElementByXpath(imgLinkedInLink);
     }
 
+    @Step
     public void clickImgLinkedInLink() {
         getImgLinkedInLink().click();
     }
 
+    @Step
     public WebElement getImgFacebookLink() {
         return searchElementByXpath(imgFacebookLink);
     }
 
+    @Step
     public void clickImgFacebookLink() {
         getImgFacebookLink().click();
     }
 
+    @Step
     public WebElement getBackToEditingLink() {
         return searchElementByCss(backToEditingLink);
     }
 
+    @Step
     public void clickBackToEditingLink() {
         getBackToEditingLink().click();
     }
 
+    @Step
     public WebElement getPublishButton() {
         List<WebElement> list = driver.findElements(By.cssSelector("button[type='submit']"));
         if (list.size() > 0) {
@@ -124,10 +144,12 @@ public class PreViewPage extends TopPart  {
         return publishButton;
     }
 
+    @Step
     public boolean isPublishButtonPresent() {
         return (driver.findElements(By.cssSelector("button[type='submit']")).size() > 0);
     }
 
+    @Step
     private void clickPublishButton() {
         if (isPublishButtonPresent()) {
             getPublishButton().click();
@@ -141,6 +163,7 @@ public class PreViewPage extends TopPart  {
      *
      * @return List<String>
      */
+    @Step
     public List<String> getTagsNames() {
         List<String> tagsNames = new ArrayList<>();
         for (WebElement current : getTagsFields()) {
@@ -155,6 +178,7 @@ public class PreViewPage extends TopPart  {
      *
      * @return CreateNewsPage
      */
+    @Step
     public CreateNewsPage backToCreateNewsPage() {
         clickBackToEditingLink();
         return new CreateNewsPage(driver);
@@ -165,13 +189,9 @@ public class PreViewPage extends TopPart  {
      *
      * @return EcoNewsPage
      */
+    @Step
     public EcoNewsPage publishNews() {
         clickPublishButton();
         return new EcoNewsPage(driver);
-    }
-
-    @Override
-    public WebDriver setDriver() {
-        return this.driver;
     }
 }

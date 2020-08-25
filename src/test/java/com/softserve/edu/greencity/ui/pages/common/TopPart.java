@@ -42,7 +42,7 @@ public abstract class TopPart implements StableWebElementSearch {
 
     private Select languageSwitcher;
     private WebElement copyright;
-    private MainMenuDropdown mainMenuDropdown;
+    private MainMenuComponent mainMenuComponent;
     private TopGuestComponent topGuestComponent;
     private TopUserComponent topUserComponent;
     private GoogleAccountManagerPage googleAccountManagerPage;
@@ -85,8 +85,8 @@ public abstract class TopPart implements StableWebElementSearch {
         getCopyright().click();
     }
 
-    public MainMenuDropdown getMainMenuDropdown() {
-        return mainMenuDropdown = new MainMenuDropdown(driver);
+    public MainMenuComponent getMainMenuComponent() {
+        return mainMenuComponent = new MainMenuComponent(driver);
     }
 
     public TopGuestComponent getTopGuestComponent() {
@@ -168,28 +168,28 @@ public abstract class TopPart implements StableWebElementSearch {
     public EcoNewsPage navigateMenuEcoNews() {
         logger.debug("go to EcoNews page");
         logger.trace("click MenuEcoNews link");
-        getMainMenuDropdown().clickMenuEcoNews();
+        getMainMenuComponent().clickMenuEcoNews();
         return new EcoNewsPage(driver);
     }
     @Step("navigate to Menu TipsTricks")
     public TipsTricksPage navigateMenuTipsTricks() {
         logger.debug("go to TipsTricks page");
         logger.trace("click TipsTricks link");
-        getMainMenuDropdown().clickMenuTipsTricks();
+        getMainMenuComponent().clickMenuTipsTricks();
         return new TipsTricksPage(driver);
     }
     @Step("navigate Menu Map")
     public MapPage navigateMenuMap() {
         logger.debug("go to Map page");
         logger.trace("click Map link");
-        getMainMenuDropdown().clickMenuMap();
+        getMainMenuComponent().clickMenuMap();
         return new MapPage(driver);
     }
     @Step("navigate to Menu MyCabinetGuest")
     public MyCabinetPage navigateMenuMyCabinet() {
         logger.debug("go to MyCabinet");
         logger.trace("click MyCabinet link");
-        getMainMenuDropdown().clickMenuMyCabinet();
+        getMainMenuComponent().clickMenuMyCabinet();
         return new MyCabinetPage(driver);
     }
     @Step("navigate to Menu MyCabinet Guest")
@@ -197,14 +197,14 @@ public abstract class TopPart implements StableWebElementSearch {
         logger.debug("go to Login Page as Guest");
         logger.trace("click MyCabinet link as Guest");
         logger.info("go to Login Page as a Guest");
-        getMainMenuDropdown().clickMenuMyCabinet();
+        getMainMenuComponent().clickMenuMyCabinet();
         return new LoginComponent(driver);
     }
     @Step("navigate to Menu About")
     public AboutPage navigateMenuAbout() {
         logger.debug("go to About page");
         logger.trace("click About link");
-        getMainMenuDropdown().clickMenuAbout();
+        getMainMenuComponent().clickMenuAbout();
         return new AboutPage(driver);
     }
     @Step("signIn")

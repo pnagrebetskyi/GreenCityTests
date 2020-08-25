@@ -3,6 +3,7 @@ package com.softserve.edu.greencity.ui.pages.econews;
 import com.softserve.edu.greencity.ui.data.econews.NewsData;
 import com.softserve.edu.greencity.ui.pages.common.TopPart;
 import com.softserve.edu.greencity.ui.tools.UploadFileUtil;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,7 +18,9 @@ import java.util.List;
  *
  * @author lv-493 Taqc/Java
  */
-public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
+public class CreateNewsPage extends TopPart {
+
+    protected WebDriverWait wait;
 
     private final String VALUE_ATTRIBUTE = "value";
     private final String CLASS_ATTRIBUTE = "class";
@@ -42,179 +45,223 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
         checkElements();
     }
 
+    @Step
     private void checkElements() {
         tagsComponent = new TagsComponent(driver);
     }
 
+    @Step
     public TagsComponent getTagsComponent() {
         tagsComponent = new TagsComponent(driver);
         return tagsComponent;
     }
 
+    @Step
     private WebElement getTitleField() {
         return searchElementByCss(titleField);
     }
 
+    @Step
     public void setTitleField(String text) {
         getTitleField().sendKeys(text);
     }
 
+    @Step
     public String getTitleFieldText() {
         return getTitleField().getText();
     }
 
+    @Step
     public String getTitleFieldValue() {
         return getTitleField().getAttribute(VALUE_ATTRIBUTE);
     }
 
+    @Step
     public void clearTitleField() {
         getTitleField().clear();
     }
 
+    @Step
     public void clickTitleField() {
         getTitleField().click();
     }
 
+    @Step
     public WebElement getSourceField() {
         return searchElementByCss(sourceField);
     }
 
+    @Step
     public void setSourceField(String text) {
         getSourceField().sendKeys(text);
     }
 
+    @Step
     public String getSourceFieldText() {
         return getSourceField().getText();
     }
 
+    @Step
     public String getSourceFieldValue() {
         return getSourceField().getAttribute(VALUE_ATTRIBUTE);
     }
 
+    @Step
     public void clearSourceField() {
         getSourceField().clear();
     }
 
+    @Step
     public void clickSourceField() {
         getSourceField().click();
     }
 
+    @Step
     public WebElement getContentField() {
         return searchElementByCss(contentField);
     }
 
+    @Step
     public void setContentField(String text) {
         getContentField().sendKeys(text);
     }
 
+    @Step
     public String getContentFieldText() {
         return getContentField().getText();
     }
 
+    @Step
     public String getContentFieldValue() {
         return getContentField().getAttribute(VALUE_ATTRIBUTE);
     }
 
+    @Step
     public void clearContentField() {
         getContentField().clear();
     }
 
+    @Step
     public void clickContentField() {
         getContentField().click();
     }
 
+    @Step
     public WebElement getDateField() {
         return searchElementByCss(dateField);
     }
 
+    @Step
     public String getDateFieldText() {
         return getDateField().getText();
     }
 
+    @Step
     public WebElement getAuthorField() {
         return searchElementByCss(authorField);
     }
 
+    @Step
     public String getAuthorFieldText() {
         return getAuthorField().getText();
     }
 
+    @Step
     public WebElement getCancelButton() {
         return searchElementByCss(cancelButton);
     }
 
+    @Step
     public void clickCancelButton() {
         getCancelButton().click();
     }
 
+    @Step
     public WebElement getPreviewButton() {
         return searchElementByCss(previewButton);
     }
 
+    @Step
     public void clickPreviewButton() {
         getPreviewButton().click();
     }
 
+    @Step
     public WebElement getPublishButton() {
         return searchElementByCss(publishButton);
     }
 
+    @Step
     public void clickPublishButton() {
         getPublishButton().click();
     }
 
+    @Step
     public boolean isPublishButtonClickable() {
         return getPublishButton().isEnabled();
     }
 
+    @Step
     public WebElement getDropArea() {
         return searchElementByCss(dropArea);
     }
 
+    @Step
     public Boolean isPictureUploaded() {
         return getDropArea().getAttribute(CLASS_ATTRIBUTE).contains("ng-star-inserted");
     }
 
+    @Step
     public WebElement getTitleDescription() {
         return searchElementByCss(titleDescription);
     }
 
+    @Step
     public boolean isTitleDescriptionWarning() {
         return getTitleField().getAttribute(CLASS_ATTRIBUTE).contains("invalid");
     }
 
+    @Step
     public WebElement getSourceDescription() {
         return searchElementByCss(sourceDescription);
     }
 
+    @Step
     public boolean isSourceDescriptionWarning() {
         return getSourceDescription().getAttribute(CLASS_ATTRIBUTE).contains("warning");
     }
 
+    @Step
     public WebElement getContentDescription() {
         return searchElementByCss(contentDescription);
     }
 
+    @Step
     public boolean isContentDescriptionWarning() {
         return getContentField().getAttribute(CLASS_ATTRIBUTE).contains("invalid");
     }
 
+    @Step
     public WebElement getPictureDescription() {
         return searchElementByXpath(pictureDescription);
     }
 
+    @Step
     public boolean isPictureDescriptionWarning() {
         return getPictureDescription().getAttribute(CLASS_ATTRIBUTE).contains("warning-color");
     }
 
+    @Step
     public WebElement getTagsDescription() {
         return searchElementByCss(tagsDescription);
     }
 
+    @Step
     public boolean isTagsDescriptionWarning() {
         return getTagsDescription().getAttribute(CLASS_ATTRIBUTE).contains("warning");
     }
 
+    @Step
     public CreateNewsPage uploadFile(WebElement dropArea, String path) {
         String absolutePath = new File(path).getAbsolutePath();
         UploadFileUtil.DropFile(new File(absolutePath), dropArea, 0, 0);
@@ -232,6 +279,7 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
      * @param newsData
      * @return CreateNewsPage
      */
+    @Step
     public CreateNewsPage fillFields(NewsData newsData) {
         clearTitleField();
         setTitleField(newsData.getTitle());
@@ -253,6 +301,7 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
      *
      * @return List<String>
      */
+    @Step
     public List<String> getSelectedTagsNames() {
         return tagsComponent.getTagsNames(tagsComponent.getSelectedTagsButtons());
     }
@@ -262,6 +311,7 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
      *
      * @return PreViewPage
      */
+    @Step
     public PreViewPage goToPreViewPage() {
         clickPreviewButton();
         return new PreViewPage(driver);
@@ -272,7 +322,8 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
      *
      * @return EcoNewsPage
      */
-    public EcoNewsPage publishNews() {  //FIXME return type should be changed to EcoNewsPage
+    @Step
+    public EcoNewsPage publishNews() {
         clickPublishButton();
         try {
             new WebDriverWait(driver, 20)
@@ -292,6 +343,7 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
      *
      * @return EcoNewsPage
      */
+    @Step
     public EcoNewsPage cancelNewsCreating() {
         clickCancelButton();
         CancelFrame cancelFrame = new CancelFrame(driver);
@@ -304,6 +356,7 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
      *
      * @return CreateNewsPage
      */
+    @Step
     public CreateNewsPage continueNewsCreating() {
         clickCancelButton();
         CancelFrame cancelFrame = new CancelFrame(driver);
@@ -360,10 +413,5 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
             getCancelEditingButton().click();
             return new EcoNewsPage(driver);
         }
-    }
-
-    @Override
-    public WebDriver setDriver() {
-        return this.driver;
     }
 }

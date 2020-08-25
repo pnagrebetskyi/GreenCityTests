@@ -18,8 +18,8 @@ public class SmallHeightPart extends TopPart {
         if (isMenuClickable()) {
             return super.navigateMenuEcoNews();
         }
-        getMainMenuDropdown().closeNaviconButton();
-        getMainMenuDropdown().clickFooterEcoNews();
+        getMainMenuComponent().closeNaviconButton();
+        getMainMenuComponent().clickFooterEcoNews();
         return new EcoNewsPage(driver);
     }
 
@@ -29,8 +29,8 @@ public class SmallHeightPart extends TopPart {
         if (isMenuClickable()) {
             return super.navigateMenuTipsTricks();
         }
-        getMainMenuDropdown().closeNaviconButton();
-        getMainMenuDropdown().clickFooterTipsTricks();
+        getMainMenuComponent().closeNaviconButton();
+        getMainMenuComponent().clickFooterTipsTricks();
         return new TipsTricksPage(driver);
     }
 
@@ -40,8 +40,8 @@ public class SmallHeightPart extends TopPart {
         if (isMenuClickable()) {
             return super.navigateMenuMap();
         }
-        getMainMenuDropdown().closeNaviconButton();
-        getMainMenuDropdown().clickFooterPlaces();
+        getMainMenuComponent().closeNaviconButton();
+        getMainMenuComponent().clickFooterPlaces();
         return new MapPage(driver);
     }
 
@@ -51,7 +51,7 @@ public class SmallHeightPart extends TopPart {
         if (isMenuClickable()) {
             return super.navigateMenuMyCabinet();
         }
-        getMainMenuDropdown().closeNaviconButton();
+        getMainMenuComponent().closeNaviconButton();
         driver.get("https://ita-social-projects.github.io/GreenCityClient/#/auth");
         return new MyCabinetPage(driver);
     }
@@ -62,8 +62,8 @@ public class SmallHeightPart extends TopPart {
         if (isMenuClickable()) {
             return super.navigateMenuAbout();
         }
-        getMainMenuDropdown().closeNaviconButton();
-        getMainMenuDropdown().clickFooterAbout();
+        getMainMenuComponent().closeNaviconButton();
+        getMainMenuComponent().clickFooterAbout();
         return new AboutPage(driver);
     }
 }

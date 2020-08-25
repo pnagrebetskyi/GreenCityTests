@@ -8,7 +8,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class MainMenuDropdown implements StableWebElementSearch {
+public class MainMenuComponent implements StableWebElementSearch {
 
     private WebDriver driver;
     protected WebDriverWait wait;
@@ -24,84 +24,102 @@ public class MainMenuDropdown implements StableWebElementSearch {
     private By footerMyHabits = By.cssSelector("app-footer a[href*='/profile']");
     private By footerAbout = By.cssSelector("app-footer a[href*='/about']");
 
-    public MainMenuDropdown(WebDriver driver) {
+    public MainMenuComponent(WebDriver driver) {
         this.driver = driver;
         checkElements();
     }
+
     @Step
     private void checkElements() {
         wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOf(getMenuEcoNews()));
     }
+
     @Step
     public WebElement getNaviconButton() {
         return searchElementByCss(naviconButton);
     }
+
     @Step
     public String getNaviconButtonText() {
         return getNaviconButton().getText();
     }
+
     @Step
     public void clickNaviconButton() {
         if (isDisplayedNaviconButton()) {
             getNaviconButton().click();
         }
     }
+
     @Step
     public boolean isDisplayedNaviconButton() {
         return getNaviconButton().isDisplayed();
     }
+
     @Step
     public WebElement getMenuEcoNews() {
         return searchElementByCss(menuEcoNews);
     }
+
     @Step
     public String getMenuEcoNewsText() {
         return getMenuEcoNews().getText();
     }
+
     @Step
     public void clickMenuEcoNews() {
         new WebDriverWait(driver, 10)
                 .until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.navigation-menu-left > ul > li > a[href*='/news']")));
         getMenuEcoNews().click();
     }
+
     @Step
     public boolean isDisplayedMenuEcoNews() {
         return getMenuEcoNews().isDisplayed();
     }
+
     @Step
     public WebElement getMenuTipsTricks() {
         return searchElementByCss(menuTipsTricks);
     }
+
     @Step
     public String getMenuTipsTricksText() {
         return getMenuTipsTricks().getText();
     }
+
     @Step
     public void clickMenuTipsTricks() {
 
         getMenuTipsTricks().click();
     }
+
     @Step
     public boolean isDisplayedMenuTipsTricks() {
         return getMenuTipsTricks().isDisplayed();
     }
+
     @Step
     public WebElement getMenuMap() {
         return searchElementByCss(menuMap);
     }
+
     @Step
     public String getMenuMapText() {
         return getMenuMap().getText();
     }
+
     @Step
     public void clickMenuMap() {
         getMenuMap().click();
     }
+
     @Step
     public boolean isDisplayedMenuMap() {
         return getMenuMap().isDisplayed();
     }
+
     @Step
     public WebElement getMenuMyHabits() {
         if (!isDisplayedMenuMyCabinet()) {
@@ -109,94 +127,117 @@ public class MainMenuDropdown implements StableWebElementSearch {
         }
         return searchElementByCss(menuMyHabits);
     }
+
     @Step
     public String getMenuMyCabinetText() {
         return getMenuMyHabits().getText();
     }
+
     @Step
     public void clickMenuMyCabinet() {
         getMenuMyHabits().click();
     }
+
     @Step
     public boolean isDisplayedMenuMyCabinet() {
         return getMenuMyHabits().isDisplayed();
     }
+
     @Step
     public WebElement getMenuAbout() {
         return searchElementByCss(menuAbout);
     }
+
     @Step
     public String getMenuAboutText() {
         return getMenuAbout().getText();
     }
+
     @Step
     public void clickMenuAbout() {
         getMenuAbout().click();
     }
+
     @Step
     public boolean isDisplayedMenuAbout() {
         return getMenuAbout().isDisplayed();
     }
+
     @Step
     public WebElement getFooterEcoNews() {
         return searchElementByCss(footerEcoNews);
     }
+
     @Step
     public String getFooterEcoNewsText() {
         return getFooterEcoNews().getText();
     }
+
     @Step
     public void clickFooterEcoNews() {
         getFooterEcoNews().click();
     }
+
     @Step
     public WebElement getFooterTipsTricks() {
         return searchElementByCss(footerTipsTricks);
     }
+
     @Step
     public String getFooterTipsTricksText() {
         return getFooterTipsTricks().getText();
     }
+
     @Step
     public void clickFooterTipsTricks() {
         getFooterTipsTricks().click();
     }
+
     @Step
     public WebElement getFooterPlaces() {
         return searchElementByCss(footerPlaces);
     }
+
     @Step
     public String getFooterPlacesText() {
         return getFooterPlaces().getText();
     }
+
     @Step
     public void clickFooterPlaces() {
         getFooterPlaces().click();
     }
+
     @Step
     public WebElement getFooterMyHabits() {
         return searchElementByCss(footerMyHabits);
     }
+
     @Step
     public String getFooterMyCabinetText() {
         return getFooterMyHabits().getText();
     }
+
     @Step
     public void clickFooterMyCabinet() {
         getFooterMyHabits().click();
     }
+
     @Step
     public WebElement getFooterAbout() {
         return searchElementByCss(footerAbout);
     }
+
     @Step
     public String getFooterAboutText() {
         return getFooterAbout().getText();
     }
+
     @Step
     public void clickFooterAbout() {
         getFooterAbout().click();
     }
+
     @Step
     public void closeNaviconButton() {
         if (isDisplayedNaviconButton()
