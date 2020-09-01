@@ -5,9 +5,7 @@ import com.softserve.edu.greencity.ui.data.UserRepository;
 import com.softserve.edu.greencity.ui.data.econews.NewsData;
 import com.softserve.edu.greencity.ui.data.econews.NewsDataRepository;
 import com.softserve.edu.greencity.ui.data.econews.Tag;
-import com.softserve.edu.greencity.ui.pages.econews.CreateNewsPage;
-import com.softserve.edu.greencity.ui.pages.econews.EcoNewsPage;
-import com.softserve.edu.greencity.ui.pages.econews.TagsComponent;
+import com.softserve.edu.greencity.ui.pages.econews.*;
 import com.softserve.edu.greencity.ui.pages.tipstricks.TipsTricksPage;
 import com.softserve.edu.greencity.ui.tools.DateUtil;
 import io.qameta.allure.Description;
@@ -17,6 +15,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
@@ -32,6 +31,14 @@ import java.util.*;
 
 public class CreateNewsPositiveTest extends GreenCityTestRunner {
 
+    private final String CREATE_NEWS_TITLE = "Create news";
+    private final String CONTENT_ERROR = "Must be minimum 20 symbols";
+    private final String INVALID_SOURCE_ERROR = " Please add the link of original article/news/post. ";
+    private final String IMAGE_ERROR = "Download PNG or JPG only. File size should be less than 10MB";
+    private final String VALID_TITLE = "Green Day";
+    private final String VALID_CONTENT = "Content = description";
+    private final String TAGS_ERROR = "Only 3 tags can be added";
+
     @BeforeMethod
     public void logoutBeforeTest() {
         if (isLogInNow()) {
@@ -40,25 +47,33 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
         }
     }
 
+    @BeforeTest
+    private SoftAssert assertSoftly() {
+        return new SoftAssert();
+    }
+
+    @BeforeTest
+    User getTemporaryUser() {
+        return UserRepository.get().temporary();
+    }
+
+    //TODO 1.Use assert or softAssert? 2.Check that news is created with help of DB or find on EcoNewsPage?
+
     /**
      * @ID=GC-595
      */
     @Test
     @Description("Verify that user is on create news form")
     public void checkThatUserOnCreateNewsForm() {
-        User user = UserRepository.get().temporary();
-        loadApplication()
-                .loginIn(user)
+        CreateNewsPage createNewsPage = loadApplication()
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
                 .gotoCreateNewsPage();
 
-        WebElement createNewsMainTitle = driver.findElement(By.cssSelector(".title h2"));
-        int numberOfButtons = driver.findElements(By.cssSelector(".submit-buttons button")).size();
-        SoftAssert softAssert = new SoftAssert();
-        softAssert.assertEquals(createNewsMainTitle.getText(), "Create news");
-        softAssert.assertTrue(numberOfButtons == 3);
+        assertSoftly().assertEquals(createNewsPage.getCreateNewsMainTitleText(), CREATE_NEWS_TITLE);
+        assertSoftly().assertTrue(createNewsPage.isPublishButtonDisplayed());
         loadApplication().signOut();
-        softAssert.assertAll();
+        assertSoftly().assertAll();
     }
 
     /**
@@ -67,13 +82,11 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
     @Test
     @Description("Verify that create news button is visible for registered user")
     public void checkVisibilityOfCreateNewsButtonForRegisteredUser() {
-        User user = UserRepository.get().temporary();
-
         EcoNewsPage econewsPage = loadApplication()
-                .loginIn(user)
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews();
 
-        Assert.assertTrue(driver.findElements(By.cssSelector("#create-button")).size() == 1);
+        Assert.assertTrue(econewsPage.isCreateNewsButtonDisplayed());
         econewsPage.signOut();
     }
 
@@ -83,9 +96,10 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
     @Test
     @Description("Verify that create news button is invisible for unregistered user")
     public void checkInvisibilityOfCreateNewsButtonForGuest() {
-        loadApplication()
+        EcoNewsPage ecoNewsPage = loadApplication()
                 .navigateMenuEcoNews();
-        Assert.assertTrue(driver.findElements(By.cssSelector("#create-button")).size() == 0);
+
+        Assert.assertFalse(ecoNewsPage.isCreateNewsButtonPresent());
     }
 
     /**
@@ -94,26 +108,17 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
     @Test
     @Description("Verify possibility of choosing tags")
     public void verifySelectAndDeselectPossibilityOfTags() {
-        User user = UserRepository.get().temporary();
-
         CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(user)
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
                 .gotoCreateNewsPage();
-        Map<String, WebElement> ourTags = new HashMap<>();
+
         TagsComponent tagsComponent = createNewsPage.getTagsComponent();
-        SoftAssert softAssert = new SoftAssert();
-        for (WebElement e : driver.findElements(By.cssSelector("div.tags button"))) {
-            ourTags.put(e.getText().toLowerCase(), e);
-        }
-        for (Tag tag : Tag.values()) {
-            tagsComponent.selectTag(tag);
-            softAssert.assertTrue(ourTags.get(tag.name().toLowerCase()).getAttribute("class").contains("filters-color"));
-            tagsComponent.deselectTag(tag);
-            softAssert.assertFalse(ourTags.get(tag.name().toLowerCase()).getAttribute("class").contains("filters-color"));
-        }
+        tagsComponent.selectTag(Tag.NEWS);
+        Assert.assertTrue(tagsComponent.isTagActive(Tag.NEWS));
+        tagsComponent.deselectTag(Tag.NEWS);
+        Assert.assertFalse(tagsComponent.isTagActive(Tag.NEWS));
         createNewsPage.signOut();
-        softAssert.assertAll();
     }
 
     /**
@@ -122,18 +127,14 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
     @Test
     @Description("Verify that news would not be created if content is too short")
     public void verifyImpossibilityOfCreatingNewsWithTooShortContent() {
-        User user = UserRepository.get().temporary();
-
         CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(user)
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
                 .gotoCreateNewsPage()
-                .fillFields(NewsDataRepository.getRequiredFieldsNews());
-        createNewsPage.clearTitleField();
-        createNewsPage.clearContentField();
-        createNewsPage.setContentField("oops");
-        boolean isDisabled = driver.findElement(By.cssSelector(".submit-buttons button+button+button")).isEnabled();
-        Assert.assertFalse(isDisabled);
+                .fillFields(NewsDataRepository.getNewsWithInvalidContentField());
+
+        Assert.assertFalse(createNewsPage.isPublishButtonClickable());
+        Assert.assertEquals(createNewsPage.getContentErrorText(), CONTENT_ERROR);
         createNewsPage.signOut();
     }
 
@@ -143,23 +144,15 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
     @Test
     @Description("Verify that user can`t create news with incorrect URL")
     public void verifyImpossibilityOfCreatingTestWithIncorrectUrlInSourceField() {
-        User user = UserRepository.get().temporary();
-
         CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(user)
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
                 .gotoCreateNewsPage()
-                .fillFields(NewsDataRepository.getRequiredFieldsNews());
-        createNewsPage.clearSourceField();
-        createNewsPage.setSourceField("www.greenmatch.co.uk/blog/how-to-be-more-eco-friendly");
-        SoftAssert softAssert = new SoftAssert();
-        boolean isDisabled = driver.findElement(By.cssSelector(".submit-buttons button+button+button")).isEnabled();
-        softAssert.assertFalse(isDisabled);
-        createNewsPage.clearSourceField();
-        createNewsPage.setSourceField("www.greenmatch.co.uk/blog/how-to-be-more-eco-friendlyhttps://www.greenmatch.co.uk/blog/how-to-be-more-eco-friendly");
-        isDisabled = driver.findElement(By.cssSelector(".submit-buttons button+button+button")).isEnabled();
-        softAssert.assertFalse(isDisabled);
-        softAssert.assertAll();
+                .fillFields(NewsDataRepository.getNewsWithInvalidSourceField());
+
+        assertSoftly().assertFalse(createNewsPage.isPublishButtonClickable());
+        assertSoftly().assertEquals(createNewsPage.getInvalidSourceErrorText(), INVALID_SOURCE_ERROR);
+        assertSoftly().assertAll();
         createNewsPage.signOut();
     }
 
@@ -169,14 +162,12 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
     @Test
     @Description("Verify that user can`t create news with empty fields")
     public void verifyImpossibilityOfCreatingNewsWithEmptyFields() {
-        User user = UserRepository.get().temporary();
-
         CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(user)
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
                 .gotoCreateNewsPage();
-        boolean isDisabled = driver.findElement(By.cssSelector(".submit-buttons button+button+button")).isEnabled();
-        Assert.assertFalse(isDisabled);
+
+        Assert.assertFalse(createNewsPage.isPublishButtonClickable());
         createNewsPage.signOut();
     }
 
@@ -186,109 +177,205 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
     @Test
     @Description("Verify that user can`t create news without tags")
     public void verifyImpossibilityOfCreatingNewsWithoutAnyTags() {
-        User user = UserRepository.get().temporary();
-
         CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(user)
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
                 .gotoCreateNewsPage()
                 .fillFields(NewsDataRepository.getRequiredFieldsNews());
-        List<Tag> tags = new ArrayList<>();
-        for (Tag tag : Tag.values()) {
-            tags.add(tag);
-        }
-        createNewsPage.getTagsComponent().deselectTags(tags);
-        boolean isDisabled = driver.findElement(By.cssSelector(".submit-buttons button+button+button")).isEnabled();
-        Assert.assertFalse(isDisabled);
-        Assert.assertFalse(createNewsPage.goToPreViewPage().isPublishButtonPresent());
+        createNewsPage.getTagsComponent().deselectTag(Tag.NEWS);
+        createNewsPage.getTagsComponent().deselectTag(Tag.EVENTS);
+
+        Assert.assertFalse(createNewsPage.isPublishButtonClickable());
         createNewsPage.signOut();
     }
 
     /**
      * @ID=GC-644
      */
-    //TODO fix commented part
     @Test
     @Description("Verify that user can`t create news with empty title")
-    public void verifyImpossibilityCreateNewsWithEmptyTitle() {
-        User user = UserRepository.get().temporary();
-
+    public void verifyImpossibilityOfCreatingNewsWithEmptyTitle() {
         CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(user)
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
-                .gotoCreateNewsPage();
-        createNewsPage.setContentField("March 4 – 7, 2020, International Exhibition Center," +
-                " Kyiv, 15 Brovarsky Ave.," +
-                " takes place the most important event for professionals and funs of natural food and healthy life");
-        createNewsPage.getTagsComponent().selectTag(Tag.NEWS);
-        createNewsPage.clearTitleField();
-        SoftAssert softAssert = new SoftAssert();
-        boolean isDisabled = driver.findElement(By.cssSelector(".submit-buttons button+button+button")).isEnabled();
-        softAssert.assertFalse(isDisabled);
-        //softAssert.assertTrue(driver.findElement(By.cssSelector(".left-form-column label span")).getText().equals("Should contain maximum 170 symbols"));
-        softAssert.assertAll();
+                .gotoCreateNewsPage()
+                .fillFields(NewsDataRepository.getNewsWithInvalidTitleField());
+
+        assertSoftly().assertFalse(createNewsPage.isPublishButtonClickable());
+        assertSoftly().assertAll();
         createNewsPage.signOut();
     }
 
-
-
-
-
-
-
-    //Tests with SQL queries not yet implemented
-
-
-
-
-
-
-
-
     /**
-     * @ID=GC-397 1. In description query example to Data Base has little mistake with "*" character
+     * @ID=GC-638
      */
-    // @Test
-    public void checkImpossibleToCreateNewsWithoutFillingMandatoryFields() throws SQLException {
+    @Test
+    @Description("Verify that user can`t create news with empty content")
+    public void verifyImpossibilityOfCreatingNewsWithEmptyContent() {
         CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(getSpecialUser("EmailFor_green.city.test2@gmail.com", "PassFor_green.city.test2@gmail.com"))
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
-                .gotoCreateNewsPage();
-        createNewsPage.setTitleField("Be eco! Be cool!");
-        createNewsPage.getTagsComponent().selectTag(Tag.NEWS);
-        createNewsPage.setContentField("It's so healthy, fun and cool to bring eco habits in everyday life");
-        createNewsPage.clickPublishButton();
+                .gotoCreateNewsPage()
+                .fillFields(NewsDataRepository.getNewsWithEmptyContentField());
 
-        Connection connection = connectToJDBC();
-        ResultSet findNews = connection
-                .createStatement()
-                .executeQuery("SELECT * FROM eco_news WHERE title = 'Be eco! Be cool!'");
-        SoftAssert softAssert = new SoftAssert();
-        softAssert.assertTrue(findNews.next());
-        int id = findNews.getInt("id");
-        connection.prepareStatement("DELETE FROM public.eco_news_tags * WHERE eco_news_id = " + id).execute();
-        connection.prepareStatement("DELETE FROM public.eco_news * WHERE id = " + id).execute();
-        softAssert.assertFalse(connection.createStatement().executeQuery("SELECT * FROM eco_news WHERE title = 'Be eco! Be cool!'").next());
+        assertSoftly().assertFalse(createNewsPage.isPublishButtonClickable());
+        assertSoftly().assertEquals(createNewsPage.getContentErrorText(), CONTENT_ERROR);
+        assertSoftly().assertAll();
         createNewsPage.signOut();
-        softAssert.assertAll();
     }
 
     /**
-     * @ID=GC-401 1. Second example string has 171 characters but should 170
-     * 2. "'" character in "it's" dangerous because of query to Data Base
-     * 3. In description query example to Data Base has little mistake with "*" character
+     * @ID=GC-621
      */
-    //  @Test(dataProvider = "getStringForTitle")
-    public void fillTitleFieldFromMinToMax(String title) throws SQLException, InterruptedException {
+    @Test
+    @Description("Verify that user can go to preview page")
+    public void verifyPossibilityOfPreViewingNewsPage() {
+        PreViewPage preViewPage = loadApplication()
+                .loginIn(getTemporaryUser())
+                .navigateMenuEcoNews()
+                .gotoCreateNewsPage()
+                .fillFields(NewsDataRepository.getRequiredFieldsNews())
+                .goToPreViewPage();
+
+        assertSoftly().assertTrue(preViewPage.isBackToEditingButtonDisplayed());
+        assertSoftly().assertAll();
+        preViewPage.signOut();
+    }
+
+    /**
+     * @ID=GC-633
+     */
+    @Test
+    @Description("Verify that preview page is displayed correctly")
+    public void verifyThatPreViewIsDisplayedCorrectly() {
+        PreViewPage preViewPage = loadApplication()
+                .loginIn(getTemporaryUser())
+                .navigateMenuEcoNews()
+                .gotoCreateNewsPage()
+                .fillFields(NewsDataRepository.getAllFieldsNews())
+                .goToPreViewPage();
+
+        assertSoftly().assertTrue(preViewPage.isBackToEditingButtonDisplayed());
+        assertSoftly().assertEquals(preViewPage.getTitleFieldText(), VALID_TITLE);
+        assertSoftly().assertEquals(preViewPage.getContentFieldText(), VALID_CONTENT);
+        assertSoftly().assertAll();
+        preViewPage.signOut();
+    }
+
+    /**
+     * @ID=GC-606
+     */
+    @Test
+    @Description("Verify that User can continue editing news in case ‘Cancel’ button was pressed")
+    public void verifyThatUserCanContinueNewsCreations() {
         CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(getSpecialUser("EmailFor_green.city.test2@gmail.com", "PassFor_green.city.test2@gmail.com"))
+                .loginIn(getTemporaryUser())
+                .navigateMenuEcoNews()
+                .gotoCreateNewsPage()
+                .fillFields(NewsDataRepository.getAllFieldsNews())
+                .clickCancelButton()
+                .clickContinueEditingButton();
+
+        assertSoftly().assertEquals(createNewsPage.getCreateNewsMainTitleText(), CREATE_NEWS_TITLE);
+        assertSoftly().assertAll();
+        createNewsPage.signOut();
+    }
+
+    /**
+     * @ID=GC-607
+     */
+    @Test
+    @Description("Verify that user can cancel news creation if he decided to drop posting")
+    public void verifyThatUserCanCancelNewsCreations() {
+        EcoNewsPage ecoNewsPage = loadApplication()
+                .loginIn(getTemporaryUser())
+                .navigateMenuEcoNews()
+                .gotoCreateNewsPage()
+                .fillFields(NewsDataRepository.getAllFieldsNews())
+                .clickCancelButton()
+                .clickCancelEditingButton();
+
+        assertSoftly().assertTrue(ecoNewsPage.isGridViewDisplayed());
+        assertSoftly().assertAll();
+        ecoNewsPage.signOut();
+    }
+
+    /**
+     * @ID=GC-588
+     */
+    @Test
+    @Description("Verify that user can`t upload .gif format image")
+    public void verifyImpossibilityOfUploadingGifImage() {
+        CreateNewsPage createNewsPage = loadApplication()
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
                 .gotoCreateNewsPage()
                 .fillFields(NewsDataRepository.getRequiredFieldsNews());
-        createNewsPage.clearTitleField();
-        createNewsPage.setTitleField(title);
-        createNewsPage.publishNews().signOut();
-        cleanDataBase(title);
+        createNewsPage.uploadFile(createNewsPage.getDropArea(), "src/test/resources/test.gif");
+        Assert.assertEquals(createNewsPage.getInvalidImageErrorText(), IMAGE_ERROR);
+        createNewsPage.signOut();
+    }
+
+    /**
+     * @ID=GC-634
+     */
+    @Test
+    @Description("Verify that user can`t add JPEG image more than 10 MB")
+    public void verifyImpossibilityOfUploadingTooLargeImage() {
+        CreateNewsPage createNewsPage = loadApplication()
+                .loginIn(getTemporaryUser())
+                .navigateMenuEcoNews()
+                .gotoCreateNewsPage()
+                .fillFields(NewsDataRepository.getRequiredFieldsNews());
+        createNewsPage.uploadFile(createNewsPage.getDropArea(), "src/test/resources/test2.jpg");
+//        Assert.assertEquals(createNewsPage.getInvalidImageErrorText(), IMAGE_ERROR); TODO IMAGE CAN BE MORE THAN 10 MB
+        createNewsPage.signOut();
+    }
+
+    /**
+     * @ID=GC-397
+     */
+    @Test
+    @Description("Verify that user can publish news only after filling in all mandatory fields with valid data")
+    public void checkImpossibleToCreateNewsWithoutFillingMandatoryFields() throws SQLException {
+        CreateNewsPage createNewsPage = loadApplication()
+                .loginIn(getTemporaryUser())
+                .navigateMenuEcoNews()
+                .gotoCreateNewsPage()
+                .fillFields(NewsDataRepository.getNewsWithValidData());
+//        createNewsPage.clickPublishButton();
+        //TODO DATABASE
+
+//        Connection connection = connectToJDBC();
+//        ResultSet findNews = connection
+//                .createStatement()
+//                .executeQuery("SELECT * FROM eco_news WHERE title = 'Be eco! Be cool!'");
+//        SoftAssert softAssert = new SoftAssert();
+//        softAssert.assertTrue(findNews.next());
+//        int id = findNews.getInt("id");
+//        connection.prepareStatement("DELETE FROM public.eco_news_tags * WHERE eco_news_id = " + id).execute();
+//        connection.prepareStatement("DELETE FROM public.eco_news * WHERE id = " + id).execute();
+//        softAssert.assertFalse(connection.createStatement().executeQuery("SELECT * FROM eco_news WHERE title = 'Be eco! Be cool!'").next());
+//        createNewsPage.signOut();
+//        softAssert.assertAll();
+    }
+
+    /**
+     * @ID=GC-401
+     */
+    @Test(dataProvider = "getStringForTitle")
+    @Description("Verify that user can publish news with valid characters in a 'Title' field")
+    public void fillTitleFieldFromMinToMax(String title) throws SQLException, InterruptedException {
+        CreateNewsPage createNewsPage = loadApplication()
+                .loginIn(getTemporaryUser())
+                .navigateMenuEcoNews()
+                .gotoCreateNewsPage()
+                .fillFields(NewsDataRepository.getNewsWithValidData(title));
+        assertSoftly().assertTrue(createNewsPage.isPublishButtonClickable());
+        createNewsPage.signOut();
+        //TODO DATABASE
+//        createNewsPage.publishNews().signOut();
+//        cleanDataBase(title);
     }
 
     @DataProvider
@@ -306,41 +393,40 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
     /**
      * @ID=GC-628
      */
-    // @Test(dataProvider = "getTagsList")
+    @Test(dataProvider = "getTagsList")
+    @Description("Verify news creation with allowed amount of selected tags")
     public void checkCreateNewsWithOneToThreeTags(List<Tag> tags) throws SQLException, InterruptedException {
         CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(getSpecialUser("EmailFor_green.city.test2@gmail.com", "PassFor_green.city.test2@gmail.com"))
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
-                .gotoCreateNewsPage();
-        createNewsPage.clearTitleField();
-        String title = "XVI International specialized exhibition of ecologic products for the daily life";
-        createNewsPage.setTitleField(title);
-        createNewsPage.clearContentField();
-        createNewsPage.setContentField("March 4 – 7, 2020, International Exhibition Center, Kyiv, 15 Brovarsky Ave.," +
-                " takes place the most important event for professionals and funs of natural food and healthy life");
-        createNewsPage.getTagsComponent().selectTags(tags);
-        EcoNewsPage econewsPage = createNewsPage.publishNews();
-        cleanDataBase(title);
-        int news = econewsPage.getNumberOfItemComponent();
-        System.out.println(news);
-        List<WebElement> elements = driver.findElements(By.cssSelector("div.list-gallery-content"));
-        for (WebElement e : elements) {
-            if (e.findElement(By.cssSelector(".title-list p")).getText().equals(title)) {
-                List<WebElement> findingTags = e.findElements(By.cssSelector(".filter-tag div"));
-                for (WebElement e2 : findingTags) {
-                    boolean assertTags = false;
-                    for (Tag tag : tags) {
-                        if (tag.name().equalsIgnoreCase(e2.getText())) {
-                            assertTags = true;
-                            break;
-                        }
-                    }
-                    Assert.assertTrue(assertTags);
-                }
-                break;
-            }
-        }
-        econewsPage.signOut();
+                .gotoCreateNewsPage()
+                .fillFields(NewsDataRepository.getNewsWithValidData(tags));
+
+//        createNewsPage.publishNews();
+//        cleanDataBase(title);
+
+        //TODO THIS METHOD TO VERIFY THAT NEWS WAS CREATED
+//        int news = econewsPage.getNumberOfItemComponent();
+//        System.out.println(news);
+
+//        List<WebElement> elements = driver.findElements(By.cssSelector("div.list-gallery-content"));
+//        for (WebElement e : elements) {
+//            if (e.findElement(By.cssSelector(".title-list p")).getText().equals(title)) {
+//                List<WebElement> findingTags = e.findElements(By.cssSelector(".filter-tag div"));
+//                for (WebElement e2 : findingTags) {
+//                    boolean assertTags = false;
+//                    for (Tag tag : tags) {
+//                        if (tag.name().equalsIgnoreCase(e2.getText())) {
+//                            assertTags = true;
+//                            break;
+//                        }
+//                    }
+//                    Assert.assertTrue(assertTags);
+//                }
+//                break;
+//            }
+//        }
+        createNewsPage.signOut();
     }
 
     @DataProvider
@@ -368,107 +454,125 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
     }
 
     /**
-     * @ID=GC-588 1. Change expected title to "Download PNG or JPG only. File size should be less than 10MB"
-     */
-    // @Test
-    public void verifyImpossibilityOfUploadingTooLargeImage() {
-        CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(getSpecialUser("EmailFor_green.city.test2@gmail.com", "PassFor_green.city.test2@gmail.com"))
-                .navigateMenuEcoNews()
-                .gotoCreateNewsPage()
-                .fillFields(NewsDataRepository.getRequiredFieldsNews());
-        createNewsPage.uploadFile(createNewsPage.getDropArea(), "src/test/resources/invalid.gif");
-        String warning = driver.findElement(By.cssSelector(".dropzone+.warning")).getText();
-        Assert.assertEquals(warning, "Download PNG or JPG only. File size should be less than 10MB");
-        createNewsPage.signOut();
-    }
-
-    /**
      * @ID=GC-643
      */
-    // @Test
-    public void verifyPossibilityOfMaxThreeTagsWhenCreateNews() throws SQLException, InterruptedException {
+    @Test(dataProvider = "getInvalidTagsList")
+    @Description("Verify that user can`t create news with more than 3 tags selected")
+    public void verifyPossibilityOfMaxThreeTagsWhenCreateNews(List<Tag> tags) throws SQLException, InterruptedException {
         CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(getSpecialUser("EmailFor_green.city.test2@gmail.com", "PassFor_green.city.test2@gmail.com"))
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
                 .gotoCreateNewsPage()
-                .fillFields(NewsDataRepository.getRequiredFieldsNews());
-        createNewsPage.clearTitleField();
-        String title = "checking tags";
-        createNewsPage.setTitleField(title);
-        List<Tag> tags = new ArrayList<>();
-        for (Tag tag : Tag.values()) {
-            tags.add(tag);
-        }
-        createNewsPage.getTagsComponent().deselectTags(tags);
-        createNewsPage.getTagsComponent().selectTags(tags);
-        SoftAssert softAssert = new SoftAssert();
-        softAssert.assertTrue(driver.findElement(By.cssSelector(".tags p")).getAttribute("class").contains("warning"));
-        softAssert.assertTrue(driver.findElement(By.cssSelector(".tags p")).getText().equals("Only 3 tags can be added"));
+                .fillFields(NewsDataRepository.getNewsWithInvalidTags(tags));
+
+        assertSoftly().assertTrue(createNewsPage.isTagsErrorDisplayed());
+        assertSoftly().assertEquals(createNewsPage.getTagsErrorText(), TAGS_ERROR);
+
         createNewsPage.goToPreViewPage().backToCreateNewsPage();
+
         createNewsPage.getTagsComponent().deselectTags(tags);
         createNewsPage.getTagsComponent().selectTags(tags);
-        softAssert.assertTrue(driver.findElement(By.cssSelector(".tags p")).getAttribute("class").contains("warning"));
-        softAssert.assertTrue(driver.findElement(By.cssSelector(".tags p")).getText().equals("Only 3 tags can be added"));
-        EcoNewsPage econewsPage = createNewsPage.publishNews();
-        List<WebElement> elements = driver.findElements(By.cssSelector("div.list-gallery-content"));
-        boolean isPresent = false;
-        for (WebElement e : elements) {
-            if (e.findElement(By.cssSelector(".title-list p")).getText().equals(title)) {
-                isPresent = true;
-                int tagsCount = e.findElements(By.cssSelector(".filter-tag div")).size();
-                softAssert.assertTrue(tagsCount == 3);
-                break;
-            }
-            softAssert.assertTrue(isPresent);
-        }
-        econewsPage.signOut();
-        cleanDataBase(title);
+
+        assertSoftly().assertTrue(createNewsPage.isTagsErrorDisplayed());
+        assertSoftly().assertEquals(createNewsPage.getTagsErrorText(), TAGS_ERROR);
+
+//        createNewsPage.publishNews();
+
+//        List<WebElement> elements = driver.findElements(By.cssSelector("div.list-gallery-content"));
+//        boolean isPresent = false;
+//        for (WebElement e : elements) {
+//            if (e.findElement(By.cssSelector(".title-list p")).getText().equals(title)) {
+//                isPresent = true;
+//                int tagsCount = e.findElements(By.cssSelector(".filter-tag div")).size();
+//                softAssert.assertTrue(tagsCount == 3);
+//                break;
+//            }
+//            softAssert.assertTrue(isPresent);
+//        }
+
+        createNewsPage.signOut();
+//        cleanDataBase(title);
+    }
+
+    @DataProvider
+    public Object[] getInvalidTagsList() {
+        return new Object[]{
+                new ArrayList<Tag>() {
+                    {
+                        add(Tag.NEWS);
+                        add(Tag.EVENTS);
+                        add(Tag.EDUCATION);
+                        add(Tag.ADS);
+                    }
+                }
+        };
     }
 
     /**
      * @ID=GC-654
      */
-    // @Test
-    public void verifyImpossibilityToSelectOneTagTwice() throws SQLException, InterruptedException {
+    @Test(dataProvider = "getTagsListWithSingleTag")
+    @Description("Verify that user can`t create news with 2 or more same tags")
+    public void verifyImpossibilityToSelectOneTagTwice(ArrayList<Tag> tags) throws SQLException, InterruptedException {
         CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(getSpecialUser("EmailFor_green.city.test2@gmail.com", "PassFor_green.city.test2@gmail.com"))
+                .loginIn(getTemporaryUser())
                 .navigateMenuEcoNews()
                 .gotoCreateNewsPage()
-                .fillFields(NewsDataRepository.getRequiredFieldsNews());
-        createNewsPage.clearTitleField();
-        String title = "public void verifyImpossibilityToSelectOneTagTwice() {";
-        createNewsPage.setTitleField(title);
-        List<Tag> tags = new ArrayList<>();
-        for (Tag tag : Tag.values()) {
-            tags.add(tag);
-        }
-        createNewsPage.getTagsComponent().deselectTags(tags);
-        createNewsPage.getTagsComponent().selectTag(Tag.NEWS);
+                .fillFields(NewsDataRepository.getNewsWithValidData());
+
         createNewsPage.goToPreViewPage().backToCreateNewsPage();
-        createNewsPage.getTagsComponent().deselectTag(Tag.NEWS);
-        createNewsPage.getTagsComponent().selectTag(Tag.NEWS);
-        EcoNewsPage econewsPage = createNewsPage.publishNews();
-        List<WebElement> elements = driver.findElements(By.cssSelector("div.list-gallery-content"));
-        boolean isPresent = false;
-        for (WebElement e : elements) {
-            if (e.findElement(By.cssSelector(".title-list p")).getText().equals(title)) {
-                isPresent = true;
-                int tagsCount = e.findElements(By.cssSelector(".filter-tag div")).size();
-                Assert.assertTrue(tagsCount == 1);
-                break;
-            }
-            Assert.assertTrue(isPresent);
-        }
-        econewsPage.signOut();
-        cleanDataBase(title);
+        createNewsPage.getTagsComponent().deselectTags(tags);
+        createNewsPage.getTagsComponent().selectTags(tags);
+
+//        EcoNewsPage econewsPage = createNewsPage.publishNews();
+
+//        List<WebElement> elements = driver.findElements(By.cssSelector("div.list-gallery-content"));
+//        boolean isPresent = false;
+//        for (WebElement e : elements) {
+//            if (e.findElement(By.cssSelector(".title-list p")).getText().equals(title)) {
+//                isPresent = true;
+//                int tagsCount = e.findElements(By.cssSelector(".filter-tag div")).size();
+//                Assert.assertTrue(tagsCount == 1);
+//                break;
+//            }
+//            Assert.assertTrue(isPresent);
+//        }
+        createNewsPage.signOut();
+//        cleanDataBase(title);
+    }
+
+    @DataProvider
+    public Object[] getTagsListWithSingleTag() {
+        return new Object[]{
+                new ArrayList<Tag>() {
+                    {
+                        add(Tag.NEWS);
+                    }
+                }
+        };
+    }
+
+    /**
+     * @ID=GC-616
+     */
+    @Test
+    @Description("Verify that news will be created, when user put more than 20 symbols in ‘Content’ field.")
+    public void createNewsWithContentLengthMoreThen20() throws SQLException, InterruptedException {
+        CreateNewsPage createNewsPage = loadApplication()
+                .loginIn(getTemporaryUser())
+                .navigateMenuEcoNews()
+                .gotoCreateNewsPage()
+                .fillFields(NewsDataRepository.getNewsWithValidData());
+//        createNewsPage.publishNews().signOut();
+//        cleanDataBase(title);
+        createNewsPage.signOut();
     }
 
     /**
      * @ID=GC-613
      */
     // @Test
-    public void creatNewsWithSourceField() throws SQLException, InterruptedException {
+    public void createNewsWithSourceField() throws SQLException, InterruptedException {
         CreateNewsPage createNewsPage = loadApplication()
                 .loginIn(getSpecialUser("EmailFor_green.city.test2@gmail.com", "PassFor_green.city.test2@gmail.com"))
                 .navigateMenuEcoNews()
@@ -480,6 +584,7 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
         createNewsPage.setTitleField(title);
         createNewsPage.setSourceField("https://google.com");
         EcoNewsPage econewsPage = createNewsPage.publishNews();
+
         List<WebElement> elements = driver.findElements(By.cssSelector("div.list-gallery-content"));
         boolean isPresent = false;
         for (WebElement e : elements) {
@@ -496,30 +601,10 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
     }
 
     /**
-     * @ID=GC-616
-     */
-    // @Test
-    public void createNewsWithContentLengthMoreThen20() throws SQLException, InterruptedException {
-        CreateNewsPage createNewsPage = loadApplication()
-                .loginIn(getSpecialUser("EmailFor_green.city.test2@gmail.com", "PassFor_green.city.test2@gmail.com"))
-                .navigateMenuEcoNews()
-                .gotoCreateNewsPage();
-        NewsData newsData = NewsDataRepository.getRequiredFieldsNews();
-        createNewsPage.fillFields(newsData);
-        createNewsPage.clearContentField();
-        createNewsPage.setContentField("12345678901234567890+1");
-        createNewsPage.clearTitleField();
-        String title = "very simple test like previous. verify contentType filed with more than 20 characters";
-        createNewsPage.setTitleField(title);
-        createNewsPage.publishNews().signOut();
-        cleanDataBase(title);
-    }
-
-    /**
      * @ID=GC-617
      */
     // @Test
-    public void verifingAutoFillingDataWhenCreateNews() throws InterruptedException, SQLException {
+    public void verifyAutoFillingDataWhenCreateNews() throws InterruptedException, SQLException {
         CreateNewsPage createNewsPage = loadApplication()
                 .loginIn(getSpecialUser("EmailFor_green.city.test2@gmail.com", "PassFor_green.city.test2@gmail.com"))
                 .navigateMenuEcoNews()
@@ -527,6 +612,7 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
         NewsData newsData = NewsDataRepository.getRequiredFieldsNews();
         createNewsPage.fillFields(newsData);
         EcoNewsPage econewsPage = createNewsPage.publishNews();
+
         List<WebElement> elements = driver.findElements(By.cssSelector("div.list-gallery-content"));
         boolean isPresent = false;
         WebElement myNews;
@@ -538,6 +624,7 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
             }
             Assert.assertTrue(isPresent);
         }
+
         new WebDriverWait(driver, 10)
                 .until(ExpectedConditions
                         .visibilityOf(driver

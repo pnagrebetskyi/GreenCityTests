@@ -80,6 +80,18 @@ public class TagsComponent {
     }
 
     /**
+     * Check is some WebElement are choosen(clicked first time)
+     *
+     * @param tag
+     * @return boolean
+     */
+    public boolean isTagActive(Tag tag) {
+        return getWebElementByTagName(tag)
+                .getAttribute("class")
+                .matches(".*(clicked-filter-button|filters-color).*");
+    }
+
+    /**
      * Method to select tags
      *
      * @param tags
@@ -92,28 +104,15 @@ public class TagsComponent {
         }
     }
 
-
-    /**
-     * Check is some WebElement are choosen(clicked first time)
-     *
-     * @param newsfilter
-     * @return boolean
-     */
-    protected boolean isTagActive(Tag newsfilter) {
-        return getWebElementByTagName(newsfilter)
-                .getAttribute("class")
-                .matches(".*(clicked-filter-button|filters-color).*");
-    }
-
     /**
      * Click on some WebElement to choose it(click first time)
      *
-     * @param newsfilter
+     * @param tag
      * @return boolean
      */
-    public void selectTag(Tag newsfilter) {
-        if (!isTagActive(newsfilter)) {
-            getWebElementByTagName(newsfilter).click();
+    public void selectTag(Tag tag) {
+        if (!isTagActive(tag)) {
+            getWebElementByTagName(tag).click();
         }
     }
 

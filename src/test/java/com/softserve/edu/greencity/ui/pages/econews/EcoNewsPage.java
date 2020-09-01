@@ -40,6 +40,7 @@ public class EcoNewsPage extends TopPart  {
         wait.until(ExpectedConditions.visibilityOf(getListView()));
     }
 
+    //TODO REMAKE THIS METHOD TO SCROLL
     private void visualiseElements() {
         int i = 0;
         waiting(2);
@@ -74,6 +75,10 @@ public class EcoNewsPage extends TopPart  {
         return getGridView().getAttribute("class").contains("active");
     }
 
+    public boolean isGridViewDisplayed(){
+        return getGridView().isDisplayed();
+    }
+
     private void clickGridView() {
         if (!isActiveGridView()) {
             scrollToElement(getGridView());
@@ -97,7 +102,7 @@ public class EcoNewsPage extends TopPart  {
     }
 
     private WebElement getCreateNewsButton() {
-        return driver.findElement(createNewsButton);
+        return searchElementByCss(createNewsButton);
     }
 
     private String getCreateNewsButtonText() {
@@ -106,6 +111,20 @@ public class EcoNewsPage extends TopPart  {
 
     private void clickCreateNewsButton() {
         getCreateNewsButton().click();
+    }
+
+    public boolean isCreateNewsButtonDisplayed(){
+        return getCreateNewsButton().isDisplayed();
+    }
+
+    public boolean isCreateNewsButtonPresent(){
+        try {
+            driver.findElement(createNewsButton);
+            return true;
+        }
+        catch (org.openqa.selenium.NoSuchElementException e) {
+            return false;
+        }
     }
 
     public ItemsContainer getItemsContainer() {
@@ -190,7 +209,7 @@ public class EcoNewsPage extends TopPart  {
     }
 
     /**
-     * News are displaeyd as list
+     * News are displayed as list
      *
      * @return EcoNewsPage
      */

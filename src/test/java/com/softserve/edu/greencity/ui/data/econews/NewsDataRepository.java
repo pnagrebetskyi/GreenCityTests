@@ -16,7 +16,67 @@ public class NewsDataRepository {
         List<Tag> tags = new ArrayList<>();
         tags.add(Tag.NEWS);
         tags.add(Tag.EVENTS);
-        return new NewsData( tags, "Green Day", "Content = description");
+        return new NewsData(tags, "Green Day", "Content = description");
+    }
+
+    public static NewsData getNewsWithValidData() {
+        List<Tag> tags = new ArrayList<>();
+        tags.add(Tag.NEWS);
+        return new NewsData(tags,
+                "Be eco! Be cool!",
+                "It's so healthy, fun and cool to bring eco habits in everyday life"
+        );
+    }
+
+    public static NewsData getNewsWithValidData(String title) {
+        List<Tag> tags = new ArrayList<>();
+        tags.add(Tag.NEWS);
+        return new NewsData(tags,
+                title,
+                "It's so healthy, fun and cool to bring eco habits in everyday life"
+        );
+    }
+
+    public static NewsData getNewsWithValidData(List<Tag> tags) {
+        return new NewsData(tags,
+                "Be eco! Be cool!",
+                "It's so healthy, fun and cool to bring eco habits in everyday life"
+        );
+    }
+
+    public static NewsData getNewsWithInvalidTitleField() {
+        List<Tag> tags = new ArrayList<>();
+        tags.add(Tag.NEWS);
+        tags.add(Tag.EDUCATION);
+        return new NewsData(tags,
+                " ",
+                "March 4 – 7, 2020, International Exhibition Center, Kyiv, 15 Brovarsky Ave., takes place the most important event for professionals and funs of natural food and healthy life"
+        );
+    }
+
+    public static NewsData getNewsWithInvalidContentField() {
+        List<Tag> tags = new ArrayList<>();
+        tags.add(Tag.NEWS);
+        return new NewsData(tags, "Green Day", "foo");
+    }
+
+    public static NewsData getNewsWithEmptyContentField() {
+        List<Tag> tags = new ArrayList<>();
+        tags.add(Tag.NEWS);
+        return new NewsData(tags,
+                "XVI International specialized exhibition of ecologic products for the daily life",
+                " "
+        );
+    }
+
+    public static NewsData getNewsWithInvalidSourceField() {
+        List<Tag> tags = new ArrayList<>();
+        tags.add(Tag.NEWS);
+        return new NewsData(tags,
+                "XVI International specialized exhibition of ecologic products for the daily life",
+                "March 4 – 7, 2020, International Exhibition Center, Kyiv, 15 Brovarsky Ave., takes place the most important event for professionals and funs of natural food and healthy life",
+                "www.greenmatch.co.uk/blog/how-to-be-more-eco-friendly"
+        );
     }
 
     public static NewsData getAllFieldsNews() {
@@ -24,10 +84,10 @@ public class NewsDataRepository {
         tags.add(Tag.NEWS);
         tags.add(Tag.EVENTS);
         return new NewsData("Green Day", tags, "https://news.com",
-                "Content = description", "src/test/resources/valid.png");
+                "Content = description", "src/test/resources/test1.jpg");
     }
 
-    public static NewsData getInvalidData() {
+    public static NewsData getNewsWithInvalidData() {
         List<Tag> tags = new ArrayList<>();
         tags.add(Tag.EVENTS);
         tags.add(Tag.NEWS);
@@ -42,7 +102,14 @@ public class NewsDataRepository {
     public static NewsData getExistingNews() {
         List<Tag> tags = new ArrayList<>();
         tags.add(Tag.EVENTS);
-        return new NewsData(tags, " Test  ", " Test Test Test Test Test Test Test  ");
+        return new NewsData(tags, " Толока в Горіховому гаю ", " Test Test Test Test Test Test Test  ");
+    }
+
+    public static NewsData getNewsWithInvalidTags(List<Tag> tags) {
+        return new NewsData(tags,
+                "Be eco! Be cool!",
+                "It's so healthy, fun and cool to bring eco habits in everyday life"
+        );
     }
 
     public static List<Tag> getNewsByTags() {

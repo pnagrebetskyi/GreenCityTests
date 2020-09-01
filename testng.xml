@@ -10,7 +10,7 @@
             <class name="com.softserve.edu.greencity.ui.tests.EcoNewsPageTest"/>
             <class name="com.softserve.edu.greencity.ui.tests.ForgotPasswordTests"/>
             <class name="com.softserve.edu.greencity.ui.tests.LoginTest"/>-->
-            <class name="com.softserve.edu.greencity.ui.tests.RegistrationTests"/>
+            <class name="com.softserve.edu.greencity.ui.tests.CreateNewsPositiveTest"/>
         </classes>
     </test>
 </suite>

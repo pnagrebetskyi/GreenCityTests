@@ -17,11 +17,13 @@ import java.util.List;
  *
  * @author lv-493 Taqc/Java
  */
-public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
+public class CreateNewsPage extends TopPart {
+    protected WebDriverWait wait;
 
     private final String VALUE_ATTRIBUTE = "value";
     private final String CLASS_ATTRIBUTE = "class";
     private TagsComponent tagsComponent;
+    private By createNewsMainTitle = By.cssSelector(".title h2");
     private By titleField = By.cssSelector("textarea[formcontrolname='title']");
     private By sourceField = By.cssSelector("div[formarrayname='tags']+label > input");
     private By contentField = By.cssSelector("div.textarea-wrapper > textarea");
@@ -36,6 +38,10 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
     private By sourceDescription = By.cssSelector("div[formarrayname='tags']+label > input + span");
     private By contentDescription = By.cssSelector("p.textarea-description");
     private By pictureDescription = By.xpath("//div[@class = 'text-wrapper']/../../div/../span | //div[@class = 'ng-star-inserted']/../span");
+    private By contentError = By.xpath("//*[@class = 'textarea-description']");
+    private By invalidSourceError = By.xpath("//*[@class = 'warning']");
+    private By invalidImageError = By.cssSelector(".dropzone+.warning");
+    private By tagsError = By.xpath("//p[@class = 'warning']");
 
     public CreateNewsPage(WebDriver driver) {
         super(driver);
@@ -49,6 +55,10 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
     public TagsComponent getTagsComponent() {
         tagsComponent = new TagsComponent(driver);
         return tagsComponent;
+    }
+
+    public String getCreateNewsMainTitleText() {
+        return searchElementByCss(titleField).getText();
     }
 
     private WebElement getTitleField() {
@@ -143,8 +153,9 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
         return searchElementByCss(cancelButton);
     }
 
-    public void clickCancelButton() {
+    public CancelFrame clickCancelButton() {
         getCancelButton().click();
+        return new CancelFrame(driver);
     }
 
     public WebElement getPreviewButton() {
@@ -165,6 +176,10 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
 
     public boolean isPublishButtonClickable() {
         return getPublishButton().isEnabled();
+    }
+
+    public boolean isPublishButtonDisplayed() {
+        return getPublishButton().isDisplayed();
     }
 
     public WebElement getDropArea() {
@@ -195,6 +210,10 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
         return searchElementByCss(contentDescription);
     }
 
+    public String getContentErrorText() {
+        return searchElementByXpath(contentError).getText();
+    }
+
     public boolean isContentDescriptionWarning() {
         return getContentField().getAttribute(CLASS_ATTRIBUTE).contains("invalid");
     }
@@ -213,6 +232,26 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
 
     public boolean isTagsDescriptionWarning() {
         return getTagsDescription().getAttribute(CLASS_ATTRIBUTE).contains("warning");
+    }
+
+    public String getInvalidSourceErrorText() {
+        return searchElementByXpath(invalidSourceError).getText();
+    }
+
+    public WebElement getTagsError(){
+        return searchElementByXpath(tagsError);
+    }
+
+    public boolean isTagsErrorDisplayed(){
+        return getTagsError().isDisplayed();
+    }
+
+    public String getTagsErrorText(){
+        return getTagsError().getText();
+    }
+
+    public String getInvalidImageErrorText() {
+        return searchElementByCss(invalidImageError).getText();
     }
 
     public CreateNewsPage uploadFile(WebElement dropArea, String path) {
@@ -272,7 +311,7 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
      *
      * @return EcoNewsPage
      */
-    public EcoNewsPage publishNews() {  //FIXME return type should be changed to EcoNewsPage
+    public EcoNewsPage publishNews() {
         clickPublishButton();
         try {
             new WebDriverWait(driver, 20)
@@ -280,7 +319,6 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
             new WebDriverWait(driver, 20)
                     .until(ExpectedConditions.invisibilityOf(driver.findElement(By.cssSelector("div.container div.people-img"))));
         } catch (Exception e) {
-            System.out.println("Publish Button(((((");
             e.printStackTrace();
         }
         return new EcoNewsPage(driver);
@@ -314,10 +352,11 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
      * CancelFrame class
      * Nested class that appears after clicking on Cancel button
      */
-    private class CancelFrame {
+    public class CancelFrame {
 
-        private WebElement continueEditingButton;
-        private WebElement cancelEditingButton;
+        protected WebDriverWait wait;
+        private By continueEditingButton = By.cssSelector("div.continue-btn > button");
+        private By cancelEditingButton = By.cssSelector("button.primary-global-button");
 
         /**
          * Constructor CancelFrame
@@ -325,20 +364,21 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
          * @param driver
          */
         public CancelFrame(WebDriver driver) {
-            initElements(driver);
+            checkElements(driver);
         }
 
-        private void initElements(WebDriver driver) {
-            continueEditingButton = driver.findElement(By.cssSelector("div.continue-btn > button"));
-            cancelEditingButton = driver.findElement(By.cssSelector("button.primary-global-button"));
+        private void checkElements(WebDriver driver) {
+            wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.visibilityOf(getContinueEditingButton()));
+            wait.until(ExpectedConditions.visibilityOf(getCancelEditingButton()));
         }
 
         private WebElement getContinueEditingButton() {
-            return continueEditingButton;
+            return searchElementByCss(continueEditingButton);
         }
 
         private WebElement getCancelEditingButton() {
-            return cancelEditingButton;
+            return searchElementByCss(cancelEditingButton);
         }
 
         /**
@@ -360,10 +400,5 @@ public class CreateNewsPage extends TopPart {    protected WebDriverWait wait;
             getCancelEditingButton().click();
             return new EcoNewsPage(driver);
         }
-    }
-
-    @Override
-    public WebDriver setDriver() {
-        return this.driver;
     }
 }

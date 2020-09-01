@@ -213,7 +213,7 @@ public class CreateNewsTest extends GreenCityTestRunner {
     @DataProvider
     public Object[] newsInvalidDataProvider() {
         return new Object[]{
-                NewsDataRepository.getInvalidData()
+                NewsDataRepository.getNewsWithInvalidData()
         };
     }
 

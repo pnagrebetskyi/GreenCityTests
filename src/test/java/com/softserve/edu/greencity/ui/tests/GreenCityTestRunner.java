@@ -7,6 +7,7 @@ import io.qameta.allure.Step;
 import lombok.SneakyThrows;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -32,18 +33,21 @@ public abstract class GreenCityTestRunner {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     protected WebDriver driver;
 
-    private void headless(){
-        if (Jenkins.isItYou()){
-               chromeHeadlessOption = true;
-        logger.info("Run in headless mode");}
-        else {logger.info("Run in normal mode");}
+    private void headless() {
+        if (Jenkins.isItYou()) {
+            chromeHeadlessOption = true;
+            logger.info("Run in headless mode");
+        } else {
+            logger.info("Run in normal mode");
+        }
     }
 
     @BeforeSuite
     public void beforeSuite() {
         WebDriverManager.chromedriver().setup();
     }
-@SneakyThrows
+
+    @SneakyThrows
     @BeforeClass
     public void setUpBeforeClass() {
         headless();
@@ -51,10 +55,12 @@ public abstract class GreenCityTestRunner {
         chromeOptions.setHeadless(chromeHeadlessOption);
         chromeOptions.addArguments("--lang=" + CHROME_LANGUAGE_OPTION);
 
-        driver = new RemoteWebDriver(new URL("http://192.168.1.7:4444/wd/hub"), chromeOptions);
+//        driver = new RemoteWebDriver(new URL("http://192.168.1.7:4444/wd/hub"), chromeOptions);
+        driver = new ChromeDriver(chromeOptions);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.manage().window().maximize();
     }
+
     @AfterClass(alwaysRun = true)
     public void tearDownAfterClass() {
         if (driver != null) {
@@ -72,8 +78,9 @@ public abstract class GreenCityTestRunner {
         if (!result.isSuccess()) {
             logger.warn("Test " + result.getName() + " ERROR");
         }
-        if (isLogInNow()){
-            signOutByStorage();}
+        if (isLogInNow()) {
+            signOutByStorage();
+        }
         //System.out.println("@AfterMethod tearDown");
     }
 
@@ -84,6 +91,7 @@ public abstract class GreenCityTestRunner {
 
     /**
      * check sing in status by storage
+     *
      * @return
      */
     @Step("verifying that user is not login")
@@ -96,16 +104,18 @@ public abstract class GreenCityTestRunner {
 
     /**
      * sing out using storage
+     *
      * @return
      */
-    protected void signOutByStorage(){
+    protected void signOutByStorage() {
         RemoteExecuteMethod executeMethod = new RemoteExecuteMethod((RemoteWebDriver) driver);
         RemoteWebStorage webStorage = new RemoteWebStorage(executeMethod);
         webStorage.getLocalStorage().clear();
         driver.navigate().refresh();
     }
+
     @Step("download All WebDrivers")
-    protected void downloadAllDrivers(){
+    protected void downloadAllDrivers() {
         WebDriverManager.chromedriver().setup();
         WebDriverManager.firefoxdriver().setup();
         WebDriverManager.edgedriver().setup();

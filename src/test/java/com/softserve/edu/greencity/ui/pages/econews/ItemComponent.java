@@ -114,3 +114,102 @@ public final class ItemComponent {
 		return str;
 	}
 }
+
+
+//package com.softserve.edu.greencity.ui.pages.econews;
+//
+//import java.util.ArrayList;
+//import java.util.Collections;
+//import java.util.List;
+//
+//import com.softserve.edu.greencity.ui.tools.engine.StableWebElementSearch;
+//import org.openqa.selenium.By;
+//import org.openqa.selenium.WebDriver;
+//import org.openqa.selenium.WebElement;
+//import org.openqa.selenium.support.ui.ExpectedConditions;
+//import org.openqa.selenium.support.ui.WebDriverWait;
+//
+//public final class ItemComponent implements StableWebElementSearch {
+//
+//	private WebDriver driver;
+//	protected WebDriverWait wait;
+//
+//	private By title = By.cssSelector("div.title-list p");
+//	private By content = By.cssSelector("div.list-text p") ;
+//	private By dateOfCreation = By.cssSelector("div.user-data-added-news > p:nth-child(1)");
+//	private By author = By.cssSelector("div.user-data-added-news > p:nth-child(2)");
+//	private List<WebElement> tags;
+//
+//	public ItemComponent(WebDriver driver, WebElement newsItem) {
+//		this.driver = driver;
+//		checkElements();
+//	}
+//
+//	private void checkElements() {
+//		wait.until(ExpectedConditions.visibilityOf(getTitle()));
+//		tags = driver.findElements(By.cssSelector("div.filter-tag div"));
+//	}
+//
+//	private List<WebElement> getTags() {
+//		return tags;
+//	}
+//
+//	protected WebElement getTitle() {
+//		return searchElementByCss(title);
+//	}
+//
+//	protected String getTitleText() {
+//		return getTitle().getText();
+//	}
+//
+//	protected void clickTitle() {
+//		getTitle().click();
+//	}
+//
+//	private WebElement getContent() {
+//		return searchElementByCss(content);
+//	}
+//
+//	protected String getContentText() {
+//		return getContent().getText();
+//	}
+//
+//	protected void clickContent() {
+//		getContent().click();
+//	}
+//
+//	private WebElement getDateOfCreation() {
+//		return searchElementByCss(dateOfCreation);
+//	}
+//
+//	private String getDateOfCreationText() {
+//		return getDateOfCreation().getText();
+//	}
+//
+//	private WebElement getAuthor() {
+//		return searchElementByCss(author);
+//	}
+//
+//	private String getAuthorText() {
+//		return getAuthor().getText();
+//	}
+//
+//	/**
+//	 * List with names of Tags
+//	 *
+//	 * @return List<String>
+//	 */
+//	protected List<String> getTagsText() {
+//		List<String> str = new ArrayList<String>();
+//		for (WebElement elem : getTags()) {
+//			str.add(elem.getText().toLowerCase());
+//		}
+//		Collections.sort(str);
+//		return str;
+//	}
+//
+//	@Override
+//	public WebDriver setDriver() {
+//		return null;
+//	}
+//}

@@ -27,7 +27,7 @@ public class PreViewPage extends TopPart  {
     private By imgLinkedInLink = By.xpath("//img[contains(@src,'linkedin.svg')]");
     private By imgFacebookLink = By.xpath("//img[contains(@src,'facebook.svg')]");
     private By backToEditingLink = By.cssSelector("div.button-text");
-    private WebElement publishButton;
+    private By publishButton = By.cssSelector("button[type='submit']");
     private List<WebElement> tagsFields;
 
     /**
@@ -110,22 +110,20 @@ public class PreViewPage extends TopPart  {
         return searchElementByCss(backToEditingLink);
     }
 
+    public boolean isBackToEditingButtonDisplayed(){
+        return getBackToEditingLink().isDisplayed();
+    }
+
     public void clickBackToEditingLink() {
         getBackToEditingLink().click();
     }
 
     public WebElement getPublishButton() {
-        List<WebElement> list = driver.findElements(By.cssSelector("button[type='submit']"));
-        if (list.size() > 0) {
-            publishButton = list.get(0);
-        } else {
-            return null;
-        }
-        return publishButton;
+        return searchElementByCss(publishButton);
     }
 
     public boolean isPublishButtonPresent() {
-        return (driver.findElements(By.cssSelector("button[type='submit']")).size() > 0);
+        return getPublishButton().isEnabled();
     }
 
     private void clickPublishButton() {
@@ -168,10 +166,5 @@ public class PreViewPage extends TopPart  {
     public EcoNewsPage publishNews() {
         clickPublishButton();
         return new EcoNewsPage(driver);
-    }
-
-    @Override
-    public WebDriver setDriver() {
-        return this.driver;
     }
 }
