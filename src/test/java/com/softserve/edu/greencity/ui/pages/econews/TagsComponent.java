@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Components of CreateNewsPage & EcoNewsPage
- * Contains WebElements that define type of news(names of news is in enum Tag)
+ * Components of CreateNewsPage & EcoNewsPage Contains WebElements that define
+ * type of news(names of news is in enum Tag)
  *
  * @author lv-492
  */
@@ -61,8 +61,7 @@ public class TagsComponent {
      */
     protected WebElement getWebElementByTagName(Tag tagName) {
         WebElement tag = getTags().stream()
-                .filter((element) -> element
-                        .getText().toLowerCase().contains(tagName.toString().toLowerCase()))
+                .filter((element) -> element.getText().toLowerCase().contains(tagName.toString().toLowerCase()))
                 .findFirst().get();
         return tag;
     }
@@ -73,9 +72,7 @@ public class TagsComponent {
      * @return List<WebElement>
      */
     protected List<WebElement> getSelectedTagsButtons() {
-        return getTags().stream()
-                .filter((element) -> element
-                        .getAttribute("class").contains("filters-color"))
+        return getTags().stream().filter((element) -> element.getAttribute("class").contains("filters-color"))
                 .collect(Collectors.toList());
     }
 
@@ -92,7 +89,6 @@ public class TagsComponent {
         }
     }
 
-
     /**
      * Check is some WebElement are choosen(clicked first time)
      *
@@ -100,8 +96,7 @@ public class TagsComponent {
      * @return boolean
      */
     protected boolean isTagActive(Tag newsfilter) {
-        return getWebElementByTagName(newsfilter)
-                .getAttribute("class")
+        return getWebElementByTagName(newsfilter).getAttribute("class")
                 .matches(".*(clicked-filter-button|filters-color).*");
     }
 

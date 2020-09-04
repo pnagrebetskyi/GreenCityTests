@@ -217,10 +217,13 @@ public class CreateNewsPositiveTest extends GreenCityTestRunner {
                 .loginIn(user)
                 .navigateMenuEcoNews()
                 .gotoCreateNewsPage();
+        createNewsPage.getTagsComponent().selectTag(Tag.NEWS);
         createNewsPage.setContentField("March 4 – 7, 2020, International Exhibition Center," +
                 " Kyiv, 15 Brovarsky Ave.," +
                 " takes place the most important event for professionals and funs of natural food and healthy life");
-        createNewsPage.getTagsComponent().selectTag(Tag.NEWS);
+        // TODO element is not clickable
+        //createNewsPage.getTagsComponent().selectTag(Tag.NEWS);
+        //
         createNewsPage.clearTitleField();
         SoftAssert softAssert = new SoftAssert();
         boolean isDisabled = driver.findElement(By.cssSelector(".submit-buttons button+button+button")).isEnabled();

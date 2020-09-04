@@ -41,12 +41,15 @@ public final class UserRepository {
         return new User(
                 property.getProperty("defaultName"),
                 property.getProperty("defaultEmail"),
-                System.getenv().get(property.getProperty("defaultPass")),
-                System.getenv().get(property.getProperty("defaultPass")));
+//                System.getenv().get(property.getProperty("defaultPass")),
+//                System.getenv().get(property.getProperty("defaultPass")));
+                property.getProperty("defaultPass"),
+                property.getProperty("defaultPass"));
     }
 
     public User googleUserCredentials() {
-        return new User(property.getProperty("googleEmail"), System.getenv().get(property.getProperty("googlePass")));
+        //return new User(property.getProperty("googleEmail"), System.getenv().get(property.getProperty("googlePass")));
+        return new User(property.getProperty("googleEmail"), property.getProperty("googlePass"));
     }
 
     public User emptyUserCredentials() {
@@ -65,8 +68,10 @@ public final class UserRepository {
         return new User(
                 property.getProperty("invalidName"),
                 property.getProperty("defaultEmail"),
-                System.getenv().get(property.getProperty("defaultPass")),
-                System.getenv().get(property.getProperty("defaultPass")));
+//                System.getenv().get(property.getProperty("defaultPass")),
+//                System.getenv().get(property.getProperty("defaultPass")));
+                property.getProperty("defaultPass"),
+                property.getProperty("defaultPass"));
     }
 
     public User unregisterUser() {
@@ -81,16 +86,20 @@ public final class UserRepository {
         return new User(
                 property.getProperty("defaultName"),
                 property.getProperty("invalidEmail"),
-                System.getenv().get(property.getProperty("defaultPass")),
-                System.getenv().get(property.getProperty("defaultPass")));
+//                System.getenv().get(property.getProperty("defaultPass")),
+//                System.getenv().get(property.getProperty("defaultPass")));
+                property.getProperty("defaultPass"),
+                property.getProperty("defaultPass"));
     }
 
     public User invalidConfirmPassCredentials() {
         return new User(
                 property.getProperty("defaultName"),
                 property.getProperty("defaultEmail"),
-                System.getenv().get(property.getProperty("defaultPass")) + "!",
-                System.getenv().get(property.getProperty("defaultPass")));
+//                System.getenv().get(property.getProperty("defaultPass")) + "!",
+//                System.getenv().get(property.getProperty("defaultPass")));
+                property.getProperty("defaultPass") + "!",
+                property.getProperty("defaultPass"));
     }
 
     public User userWithEmptyEmailField() {
@@ -111,8 +120,10 @@ public final class UserRepository {
         return new User(
                 property.getProperty("nameForRegistration"),
                 property.getProperty("emailForRegistration").replace("@", getRandom() + "@"),
-                System.getenv().get(property.getProperty("passwordForRegistration")),
-                System.getenv().get(property.getProperty("passwordForRegistration")));
+//                System.getenv().get(property.getProperty("passwordForRegistration")),
+//                System.getenv().get(property.getProperty("passwordForRegistration")));
+                property.getProperty("passwordForRegistration"),
+                property.getProperty("passwordForRegistration"));
     }
 
     public User invalidPassUppercaseUserCreds() {
