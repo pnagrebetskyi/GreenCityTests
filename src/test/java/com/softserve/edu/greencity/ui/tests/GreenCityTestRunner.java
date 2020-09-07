@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -49,14 +51,10 @@ public abstract class GreenCityTestRunner {
 
     @SneakyThrows
     @BeforeClass
-    public void setUpBeforeClass() {
+    public void setUpBeforeClass() throws MalformedURLException {
         headless();
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.setHeadless(chromeHeadlessOption);
-        chromeOptions.addArguments("--lang=" + CHROME_LANGUAGE_OPTION);
-
-//        driver = new RemoteWebDriver(new URL("http://192.168.1.7:4444/wd/hub"), chromeOptions);
-        driver = new ChromeDriver(chromeOptions);
+        DesiredCapabilities capability = DesiredCapabilities.chrome();
+        driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.manage().window().maximize();
     }

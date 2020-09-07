@@ -44,6 +44,16 @@ public class NewsDataRepository {
         );
     }
 
+    public static NewsData getNewsWithValidSourceField(){
+        List<Tag> tags = new ArrayList<>();
+        tags.add(Tag.NEWS);
+        return new NewsData(tags,
+                "Be eco! Be cool!",
+                "It's so healthy, fun and cool to bring eco habits in everyday life",
+                "https://news.com"
+        );
+    }
+
     public static NewsData getNewsWithInvalidTitleField() {
         List<Tag> tags = new ArrayList<>();
         tags.add(Tag.NEWS);
@@ -84,7 +94,7 @@ public class NewsDataRepository {
         tags.add(Tag.NEWS);
         tags.add(Tag.EVENTS);
         return new NewsData("Green Day", tags, "https://news.com",
-                "Content = description", "src/test/resources/test1.jpg");
+                "Content = description", "src/test/resources/validImage.jpg");
     }
 
     public static NewsData getNewsWithInvalidData() {
