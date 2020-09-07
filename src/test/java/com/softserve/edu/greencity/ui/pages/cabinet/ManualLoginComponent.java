@@ -155,8 +155,6 @@ public class ManualLoginComponent extends LoginComponent implements StableWebEle
         inputEmail(user.getEmail());
         inputPassword(user.getPassword());
     }
-
-    //Login???? which page return?
     @Step
     public MyCabinetPage successfullyLogin(User user) {
         fillFields(user);

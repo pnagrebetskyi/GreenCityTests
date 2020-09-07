@@ -100,15 +100,8 @@ public class GoogleMailAPI {
     @SneakyThrows
     public int getNumberMailsBySubject(String mail, String password, String subject, int maxTries) {
         connectToEmail(mail, password);
-        int count = 0;
-        while (true) {
             Message[] emails = emailUtils.getMessagesBySubject(subject, true, 5);
-            int num = emails.length;
-            if (++count == maxTries) {
-                return 0;
-            }
-            return num;
-        }
+            return  emails.length;
     }
     @SneakyThrows(Exception.class)
     @Step("get array of messages")
@@ -128,7 +121,7 @@ public class GoogleMailAPI {
 
     @SneakyThrows(Exception.class)
     @Step("get array of messages")
-    public void waitFroMassagesWithSubject(String subject, boolean unread, int maxToSearch, long timeToWait,String email, String emailPassword){
+    public void waitForMassagesWithSubject(String subject, boolean unread, int maxToSearch, long timeToWait,String email, String emailPassword){
         logger.info("Wait for email with subject: " + subject);
         long start = System.nanoTime()/ 1000000000;
         long end = start + ((long) timeToWait);

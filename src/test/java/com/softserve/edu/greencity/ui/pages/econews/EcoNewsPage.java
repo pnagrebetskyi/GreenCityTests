@@ -5,7 +5,9 @@ import com.softserve.edu.greencity.ui.data.econews.NewsData;
 import com.softserve.edu.greencity.ui.data.econews.Tag;
 import com.softserve.edu.greencity.ui.pages.common.TopPart;
 import com.softserve.edu.greencity.ui.tools.QuantityItems;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -17,57 +19,88 @@ import java.util.List;
 /**
  * @author lv-493 Taqc/Java
  */
-public class EcoNewsPage extends TopPart  {
+public class EcoNewsPage extends TopPart {
 
     protected WebDriverWait wait;
 
     private ItemsContainer itemsContainer;
     private TagsComponent tagsComponent;
+
+    private By header = By.cssSelector("h1");
     private By createNewsButton = By.id("create-button");
-    private By gridView = By.cssSelector("div.gallery-view");
-    private By listView = By.cssSelector("div.list-view");
-    private By foundItems = By.xpath("//*[@class='ng-star-inserted']");
+    private By gridView = By.cssSelector(".gallery-view .one-square");
+    private By listView = By.cssSelector("div.list-view>.one-line");
+    private By displayedArticles = By.cssSelector("ul.list.gallery-view-active > li.gallery-view-li-active");
+    ///private By countItems = By.cssSelector(("app-remaining-count>p"));
+    private By foundItems = By.cssSelector(("app-remaining-count>p"));//By.cssSelector(".list>li.ng-star-inserted");//By.xpath("//*[@class='ng-star-inserted']");//(".wrapper>ul>a")-filter
+
 
     public EcoNewsPage(WebDriver driver) {
         super(driver);
         checkElements();
-//        visualiseElements();
     }
 
-    private void checkElements(){
+    private void checkElements() {
         wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOf(getGridView()));
         wait.until(ExpectedConditions.visibilityOf(getListView()));
     }
 
-    private void visualiseElements() {
-        int i = 0;
-        waiting(2);
-        scrollToElement(getCopyright()); //  open all news
-        waiting(2);
-        List<WebElement> listElements = driver.findElements(By.cssSelector("div[id='list-gallery-content']"));
-        while (i < listElements.size()) {
-            waiting(2);
-            scrollToElement(listElements.get(i));
-            i++;
-            listElements = driver.findElements(By.cssSelector("div[id='list-gallery-content']"));
-        }
-    }
-
+    //Tag Component
     private TagsComponent getTagsComponent() {
         return tagsComponent = new TagsComponent(driver);
     }
 
+    //Header
+    public WebElement getHeader() {
+        return driver.findElement(header);
+    }
+
+    public String getHeaderText() {
+        return getHeader().getText();
+    }
+
+    //Create news button
+    private WebElement getCreateNewsButton() {
+        return driver.findElement(createNewsButton);
+    }
+
+    private String getCreateNewsButtonText() {
+        return getCreateNewsButton().getText();
+    }
+
+    private void clickCreateNewsButton() {
+        getCreateNewsButton().click();
+    }
+
+    public boolean isDisplayedCreateNewsButton() {
+        return getCreateNewsButton().isDisplayed();
+    }
+
+    //Amount of items
     private WebElement getFoundItems() {
-        return searchElementByXpath(foundItems);
+        return searchElementByCss(foundItems);
     }
 
     private String getFoundItemsText() {
         return getFoundItems().getText();
     }
 
+    public int getNumberOfItemComponent() {
+        driver.findElements(displayedArticles);
+        return Integer.parseInt(getFoundItemsText().split(" ")[0]);
+    }
+
+
+    //Grid View
     public WebElement getGridView() {
         return searchElementByCss(gridView);
+    }
+
+    public EcoNewsPage hoverToGridView() {
+        Actions action = new Actions(driver);
+        action.moveToElement(getGridView()).perform();
+        return this;
     }
 
     public boolean isActiveGridView() {
@@ -81,8 +114,19 @@ public class EcoNewsPage extends TopPart  {
         }
     }
 
-    private WebElement getListView() {
+    //List View
+    public WebElement getListView() {
         return searchElementByCss(listView);
+    }
+
+    public boolean isDisplayedListView() {
+        return getListView().isDisplayed();
+    }
+
+    public EcoNewsPage hoverToListView() {
+        Actions action = new Actions(driver);
+        action.moveToElement(getListView()).perform();
+        return this;
     }
 
     public boolean isActiveListView() {
@@ -96,20 +140,20 @@ public class EcoNewsPage extends TopPart  {
         }
     }
 
-    private WebElement getCreateNewsButton() {
-        return driver.findElement(createNewsButton);
-    }
-
-    private String getCreateNewsButtonText() {
-        return getCreateNewsButton().getText();
-    }
-
-    private void clickCreateNewsButton() {
-        getCreateNewsButton().click();
-    }
-
+    //Item Container
     public ItemsContainer getItemsContainer() {
         return itemsContainer = new ItemsContainer(driver);
+    }
+
+    public void visualiseListElements() {
+        int i = 0;
+        int numberOfScroll = Math.round(getNumberOfItemComponent() / 12);//on one page can see only 12 news
+        //waiting(2);
+        while (i <= numberOfScroll) {
+            scrollToElement(getCopyright());
+            i++;//  open all news
+            waiting(3);
+        }
     }
 
     /**
@@ -135,14 +179,16 @@ public class EcoNewsPage extends TopPart  {
         }
     }
 
-    /**
+
+
+    /*  /**
      * Get number of ItemComponent, what are present on EcoNewsPage
      *
      * @return int
      */
-    public int getNumberOfItemComponent() {
+   /* public int getNumberOfItemComponent() {
         return new QuantityItems().quantityItems(getFoundItemsText());
-    }
+    }*/
 
     /**
      * Method allows to choose type of news, which will be displayed on the EcoNewsPage
@@ -238,5 +284,4 @@ public class EcoNewsPage extends TopPart  {
     public WebDriver setDriver() {
         return this.driver;
     }
-
 }

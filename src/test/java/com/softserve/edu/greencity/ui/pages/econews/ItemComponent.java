@@ -1,116 +1,185 @@
 package com.softserve.edu.greencity.ui.pages.econews;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public final class ItemComponent {
+    private WebDriver driver;
+    protected WebDriverWait wait;
+    private WebElement newsItem;
+    private By tags = By.cssSelector(".filter-tag div");
+    private By image = By.cssSelector(".list-image-content");
+    private By title = By.cssSelector(".title-list p");
+    private By content = By.cssSelector(".list-text p");
+    private By dateOfCreation = By.cssSelector(".user-data-text-date");
+    private By author = By.cssSelector(".user-data-added-news > p:nth-child(2)");
 
-	private WebDriver driver;
-	protected WebDriverWait wait;
+    public ItemComponent(WebDriver driver, WebElement newsItem) {
+        this.driver = driver;
+        this.newsItem = newsItem;
+        checkElements();
+    }
 
-	private WebElement newsItem;
-	private WebElement title;
-	private WebElement content;
-	private WebElement dateOfCreation;
-	private WebElement author;
-	private List<WebElement> tags;
+    private void checkElements() {
+        getTitle();
+        //getContent();
+        //getDateOfCreation();
+        //getAuthor();
+        //makeElPresent();
+    }
 
-	public ItemComponent(WebDriver driver, WebElement newsItem) {
-		this.driver = driver;
-		this.newsItem = newsItem;
-		initElements();
-	}
+    private void makeElPresent() {
+        driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+        Duration duration = Duration.ofMillis(20L);
+        Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(duration).ignoring(TimeoutException.class);
+        wait.until(ExpectedConditions.visibilityOfAllElements(getTitle(), getImage(), getContent(), getDateOfCreation(), getAuthor()));
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+    }
 
-	private void initElements() {
-		tags = newsItem.findElements(By.cssSelector("div.filter-tag div"));
-		title = newsItem.findElement(By.cssSelector("div.title-list p"));
-		content = newsItem.findElement(By.cssSelector("div.list-text p"));
-		dateOfCreation = newsItem.findElement(By.cssSelector("div.user-data-added-news > p:nth-child(1)"));
-		author = newsItem.findElement(By.cssSelector("div.user-data-added-news > p:nth-child(2)"));
-//		makeElPresent();
-	}
+    public boolean IsDisplayedItemComponent() {
+        if (newsItem.isDisplayed()) {
+            return true;
+        } else scrollToElement(newsItem);
+        return newsItem.isDisplayed();
+    }
 
-	private void makeElPresent() {
-		driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
-		Duration duration = Duration.ofMillis(20L);
-		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(duration).ignoring(TimeoutException.class);
-//		WebDriverWait wait = new WebDriverWait(myDriver, 15);
-//		wait.until(webDriver -> ((JavascriptExecutor) driver).executeScript("return document.readyState").toString().equals("complete"));
-		wait.until(ExpectedConditions.visibilityOfAllElements(title, content, dateOfCreation, author));
-		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-	}
 
-	private List<WebElement> getTags() {
-		return tags;
-	}
+    //Tags
+    public List<WebElement> getTags() {
+        return newsItem.findElements(tags);
+    }
 
-	private WebElement getNewsItem() {
-		return newsItem;
-	}
+    public boolean isDisplayedTags() {
+        boolean isDisplayedCurrent = false;
+        for (WebElement current : getTags()) {
+            isDisplayedCurrent = current.isDisplayed();
+        }
+        return isDisplayedCurrent;
+    }
 
-	protected WebElement getTitle() {
-		return title;
-	}
+    //Image
+    public WebElement getImage() {
+        return newsItem.findElement(image);
+    }
 
-	protected String getTitleText() {
-		return getTitle().getText();
-	}
+    public boolean isDisplayedImage() {
+        return getImage().isDisplayed();
+    }
 
-	protected void clickTitle() {
-		getTitle().click();
-	}
+    //Title
+    public WebElement getTitle() {
+        return newsItem.findElement(title);
+    }
 
-	private WebElement getContent() {
-		return content;
-	}
+    public String getTitleText() {
+        return getTitle().getText();
+    }
 
-	protected String getContentText() {
-		return getContent().getText();
-	}
+    protected void clickTitle() {
+        getTitle().click();
+    }
 
-	protected void clickContent() {
-		getContent().click();
-	}
+    public boolean isDisplayedTitle() {
+        return getTitle().isDisplayed();
+    }
 
-	private WebElement getDateOfCreation() {
-		return dateOfCreation;
-	}
+    //Content
+    public WebElement getContent() {
+        return newsItem.findElement(content);
+    }
 
-	private String getDateOfCreationText() {
-		return getDateOfCreation().getText();
-	}
+    protected String getContentText() {
+        return getContent().getText();
+    }
 
-	private WebElement getAuthor() {
-		return author;
-	}
+    protected void clickContent() {
+        getContent().click();
+    }
 
-	private String getAuthorText() {
-		return getAuthor().getText();
-	}
+    public boolean isDisplayedContent() {
+        return getContent().isDisplayed();
+    }
 
-	/**
-	 * List with names of Tags
-	 *
-	 * @return List<String>
-	 */
-	protected List<String> getTagsText() {
-		List<String> str = new ArrayList<String>();
-		for (WebElement elem : getTags()) {
-			str.add(elem.getText().toLowerCase());
-		}
-		Collections.sort(str);
-		return str;
-	}
+    //DateOfCreation
+    public WebElement getDateOfCreation() {
+        wait = new WebDriverWait(driver, 5);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(dateOfCreation));
+        return newsItem.findElement(dateOfCreation);
+    }
+
+    public String getDateOfCreationText() {
+        return getDateOfCreation().getText();
+    }
+
+    public Date getDateOfCreationDateFormat() {
+        Date date = null;
+        String dateText = getDateOfCreation().getText();
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH);
+        try {
+            date = formatter.parse(dateText);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
+    public boolean isDisplayedDateOfCreation() {
+        return getDateOfCreation().isDisplayed();
+    }
+
+    public boolean isCorrectDateFormat(String date) {
+        Pattern DATE_PATTERN = Pattern.compile("[a-zA-Z]{3}\\s+\\d{1,2},?\\s+\\d{4}");
+        return DATE_PATTERN.matcher(date).matches();
+    }
+
+    //Author
+    private WebElement getAuthor() {
+        return newsItem.findElement(author);
+    }
+
+    private String getAuthorText() {
+        return getAuthor().getText();
+    }
+
+    public boolean isDisplayedAuthor() {
+        return getAuthor().isDisplayed();
+    }
+
+    /**
+     * List with names of Tags
+     *
+     * @return List<String>
+     */
+    protected List<String> getTagsText() {
+        List<String> str = new ArrayList<String>();
+        for (WebElement elem : getTags()) {
+            str.add(elem.getText().toLowerCase());
+        }
+        Collections.sort(str);
+        return str;
+    }
+
+    /**
+     * Scroll to WebElement, in case when need to click on it or without scrolling are invisible
+     *
+     * @param el
+     */
+    private void scrollToElement(WebElement el) {
+        Actions action = new Actions(driver);
+        action.moveToElement(el).perform();
+    }
 }

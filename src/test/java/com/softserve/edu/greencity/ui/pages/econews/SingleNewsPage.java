@@ -50,7 +50,7 @@ public class SingleNewsPage extends TopPart  {
         return tagsList;
     }
 
-    private WebElement getTitle() {
+    public WebElement getTitle() {
         return searchElementByCss(title);
     }
 

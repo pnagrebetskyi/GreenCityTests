@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 public class TagsComponent {
 
     private WebDriver driver;
+    private By tagsEcoNews = By.cssSelector("ul.ul-eco-buttons > a > li");
+    private By tagsCreateNews = By.cssSelector("div.tags > button");
     private List<WebElement> tags;
 
     public TagsComponent(WebDriver driver) {
@@ -28,14 +30,22 @@ public class TagsComponent {
     }
 
     private void initElements() {
-        tags = driver.findElements(By.cssSelector("div.tags > button"));
+        tags = getTagsCreateNews();
         if (tags.size() == 0) {
-            tags = driver.findElements(By.cssSelector("ul.ul-eco-buttons > a > li"));
+            tags = getTagsEcoNews();
         }
     }
 
     protected List<WebElement> getTags() {
         return tags;
+    }
+
+    public List<WebElement> getTagsEcoNews() {
+        return driver.findElements(tagsEcoNews);
+    }
+
+    public List<WebElement> getTagsCreateNews() {
+        return driver.findElements(tagsCreateNews);
     }
 
     /**

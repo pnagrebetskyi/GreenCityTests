@@ -1,5 +1,6 @@
 package com.softserve.edu.greencity.ui.pages.common;
 
+import com.softserve.edu.greencity.ui.pages.econews.EcoNewsPage;
 import com.softserve.edu.greencity.ui.tools.engine.StableWebElementSearch;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
